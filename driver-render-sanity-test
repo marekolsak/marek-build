@@ -1,0 +1,1 @@
+PIGLIT_PLATFORM=gbm `dirname $0`/piglit/bin/fbo-generatemipmap -auto
