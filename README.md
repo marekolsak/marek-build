@@ -113,7 +113,9 @@ X crashes can also be debugged via gdb over ssh: `sudo gdb /usr/lib/xorg/Xorg`
 Building 32-bit drivers
 -----------------------
 
-This step is unnecessary if you don't expect to test certain Steam games. It's the same as above except that you add `-32` like this:
+This step is unnecessary if you don't expect to test certain Steam games. You only need 32-bit libdrm, llvm, and Mesa. You don't need anything else.
+
+It's the same as above except that you add `-32` like this:
 ```
 ../conf_drm.sh -32
 ../conf_mesa.sh -32
