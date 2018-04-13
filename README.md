@@ -11,6 +11,7 @@ Use git to clone these:
 - libdrm: https://cgit.freedesktop.org/mesa/drm (open the page)
 - llvm: https://git.llvm.org/git/llvm.git (clone directly)
 - mesa: https://cgit.freedesktop.org/mesa/mesa (open the page)
+- xf86-video-amdgpu: https://cgit.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://github.com/waffle-gl/waffle (open the page)
 - piglit: https://cgit.freedesktop.org/piglit (open the page)
 
@@ -22,6 +23,7 @@ Configure and build everything in the listed order, because there are dependenci
 - kernel depends on firmware
 - libdrm and llvm don't depend on anything
 - mesa depends on libdrm and llvm
+- xf86-video-amdgpu depends on libdrm and mesa
 - waffle depends on mesa
 - piglit depends on mesa and waffle
 
@@ -75,6 +77,13 @@ sudo make install
 ```
 Mesa contains libGL, libEGL, libgbm, and libglapi in addition to drivers.
 
+
+**xf86-video-amdgpu**: Go to the xf86-video-amdgpu directory and type:
+```
+./autogen --prefix=/usr
+make -j16
+sudo make install
+```
 
 **Waffle:** Go to the waffle directory and type:
 ```
