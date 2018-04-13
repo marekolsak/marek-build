@@ -18,13 +18,12 @@ You can skip firmware if you already have firmware for your GPU.
 
 You can skip kernel and llvm if you don't intend to work on those. You are going to need llvm development packages if you are not going to build llvm manually.
 
-Configure and build everything in the listed order, because there are dependencies.
-
-kernel depends on firmware.
-libdrm and llvm don't depend on anything.
-mesa depends on libdrm and llvm.
-waffle depends on mesa.
-piglit depends on mesa and waffle.
+Configure and build everything in the listed order, because there are dependencies:
+- kernel depends on firmware
+- libdrm and llvm don't depend on anything
+- mesa depends on libdrm and llvm
+- waffle depends on mesa
+- piglit depends on mesa and waffle
 
 
 Building
