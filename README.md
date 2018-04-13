@@ -31,7 +31,7 @@ Configure and build everything in the listed order, because there are dependenci
 Building
 --------
 
-Getting the firmware is not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. Installing the firmware only consists of copying files from the repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
+Getting the firmware is not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. Installing the firmware only consists of copying files from the firmware repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
 
 **Most components may require installation of additional development library packages. Follow error messages to resolve them.**
 
