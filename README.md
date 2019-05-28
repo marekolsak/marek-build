@@ -10,6 +10,7 @@ Use git to clone these:
 - kernel: the internal AMD drm-next repository is recommended for AMD employees
 - libdrm: https://cgit.freedesktop.org/mesa/drm (open the page)
 - llvm: https://git.llvm.org/git/llvm.git (clone directly)
+- meson: https://github.com/mesonbuild/meson.git
 - mesa: https://cgit.freedesktop.org/mesa/mesa (open the page)
 - xf86-video-amdgpu: https://cgit.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://github.com/waffle-gl/waffle (open the page)
@@ -22,6 +23,7 @@ You can skip kernel and llvm if you don't intend to work on those. You are going
 Configure and build everything in the listed order, because there are dependencies:
 - kernel depends on firmware
 - libdrm and llvm don't depend on anything
+- mesa uses meson for configuration of the build system
 - mesa depends on libdrm and llvm
 - xf86-video-amdgpu depends on libdrm and mesa
 - waffle depends on mesa
@@ -65,17 +67,20 @@ sudo ldconfig
 Now ld will be able to find LLVM.
 
 
-**Mesa:** If you don't build LLVM from source and instead want to use an LLVM development package from your distribution, remove `--with-llvm-prefix=*` from `conf_mesa.sh`.
+**Mesa:** If you want to use LLVM installed in the standard directory paths, remove `--native-file` from `conf_mesa_meson.sh`. Otherwise, it will get the LLVM installation path from the llvm_config_* files.
 
-Before or after installing Mesa on Ubuntu 16.04, the following hack has to be done: Remove all `libGL.*` and `libEGL.*` files that are not directly in `/usr/lib/x86_64-linux-gnu`, but are in subdirectories of that directory, and then run `sudo ldconfig`. You have to do it every time Ubuntu updates its Mesa packages.
+Before configuring Mesa, you need to install meson from the repository linked at the beginning.
 
 Go to the mesa directory and type:
 ```
-../conf_mesa.sh
-make -j16
-sudo make install
+../conf_mesa_meson.sh
+cd build
+ninja
+sudo ninja install
 ```
-Mesa contains libGL, libEGL, libgbm, and libglapi in addition to drivers.
+Mesa contains libGL, libEGL, libgbm, and libglapi, and drivers.
+
+(Before or after installing Mesa on Ubuntu 16.04, the following hack has to be done: Remove all `libGL.*` and `libEGL.*` files that are not directly in `/usr/lib/x86_64-linux-gnu`, but are in subdirectories of that directory, and then run `sudo ldconfig`. You have to do it every time Ubuntu updates its Mesa packages.)
 
 
 **xf86-video-amdgpu**: Go to the xf86-video-amdgpu directory and type:
@@ -115,10 +120,10 @@ Building 32-bit drivers
 
 This step is unnecessary if you don't expect to test certain Steam games. You only need 32-bit libdrm, llvm, and Mesa. You don't need anything else.
 
-It's the same as above except that you add `-32` like this:
+It's the same as above except that you add these parameters:
 ```
 ../conf_drm.sh -32
-../conf_mesa.sh -32
+../conf_mesa_meson.sh 32
 ```
 I recommend that you clone separate directories for those, called `drm32` and `mesa32`. The symlink script below requires that directory layout.
 
