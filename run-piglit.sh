@@ -1,7 +1,7 @@
 #!/bin/bash
 cd `dirname $0`/piglit
 
-# run-piglit.sh [-isol] [BASELINE|--] [piglit params]
+# run-piglit.sh [-isol] [-gpu] [-prime] [-cts] [BASELINE|--] [piglit params]
 
 ISOLATION=0
 if test "x$1" = "x-isol"; then
@@ -9,11 +9,51 @@ if test "x$1" = "x-isol"; then
     shift 1
 fi
 
-# quick:
-DISABLE="-x max-texture-size -x tex3d-maxsize -x fbo-maxsize -x texture_buffer_object.max-size -x image_load_store.max-size -x texture_buffer_max_size"
-DISABLE="$DISABLE -x khr_create_context.pre-gl3.2 -x khr_create_context.3.2"
+DISABLE="-x maxsize -x max[_-].*size -x maxuniformblocksize -x robustness.*infinite_loop -x deqp-gles31.functional.ssbo.layout.random.all_shared_buffer.48"
 
 PROFILE="quick"
+
+if test "x$1" = "x-gpu"; then
+    PROFILE="gpu"
+    shift 1
+fi
+if test "x$1" = "x-cts"; then
+    PROFILE="khr_gl45"
+    shift 1
+fi
+
+if test "x$1" = "x-deqp"; then
+    PROFILE="deqp_gles2 deqp_gles3 deqp_gles31 deqp_egl"
+    shift 1
+fi
+if test "x$1" = "x-deqp-egl"; then
+    PROFILE="deqp_egl"
+    shift 1
+fi
+if test "x$1" = "x-deqp2"; then
+    PROFILE="deqp_gles2"
+    shift 1
+fi
+if test "x$1" = "x-deqp3"; then
+    PROFILE="deqp_gles3"
+    shift 1
+fi
+if test "x$1" = "x-deqp31"; then
+    PROFILE="deqp_gles31"
+    shift 1
+fi
+
+if test "x$1" = "x-prime1"; then
+    export DRI_PRIME=1
+    export WAFFLE_GBM_DEVICE=/dev/dri/renderD128
+    shift 1
+fi
+
+if test "x$1" = "x-prime2"; then
+    export DRI_PRIME=1
+    export WAFFLE_GBM_DEVICE=/dev/dri/renderD129
+    shift 1
+fi
 
 BASELINE=$1
 shift 1
