@@ -6,6 +6,7 @@ mesa_ldflags="$mesa_cflags -fuse-ld=gold"
 if test x$1 = x32; then
     is64bit=false
     archdir=i386-linux-gnu
+    dri_drivers=
     gallium_drivers=radeonsi
     vulkandrv=
     omx=disabled
@@ -15,6 +16,7 @@ if test x$1 = x32; then
 else
     is64bit=true
     archdir=x86_64-linux-gnu
+    dri_drivers=
     gallium_drivers=radeonsi,swrast
     vulkandrv=amd
     omx=bellagio
@@ -26,8 +28,8 @@ meson build$1 --prefix /usr --libdir /usr/lib/$archdir --buildtype debugoptimize
 	--native-file `dirname $0`/llvm_config_$archdir.cfg \
 	-Dc_args="$mesa_cflags" -Dcpp_args="$mesa_cflags" \
 	-Dc_link_args="$mesa_ldflags" -Dcpp_link_args="$mesa_ldflags" \
-	-Dpkg_config_path=/usr/lib/$archdir/pkgconfig \
+	-Dpkg_config_path=/usr/lib/$archdir/pkgconfig -Dgallium-xa=false \
 	-Dgallium-vdpau=$is64bit -Dgallium-va=$is64bit -Dgallium-omx=$omx -Dgallium-xvmc=false \
 	-Dplatforms=x11,drm,surfaceless -Dgallium-drivers=$gallium_drivers \
-	-Ddri-drivers= -Dvulkan-drivers=$vulkandrv \
+	-Ddri-drivers=$dri_drivers -Dvulkan-drivers=$vulkandrv \
 	-Dlibunwind=$is64bit

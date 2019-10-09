@@ -47,16 +47,15 @@ It will build and install the kernel.
 **libdrm:** Go to the libdrm directory and type:
 ```
 ../conf_drm.sh
-make -j16
-sudo make install
+ninja -Cbuild
+sudo ninja -Cbuild install
 ```
 
 **LLVM:** Go to the llvm directory and type:
 ```
 ../conf_llvm.sh
-cd build
-ninja
-sudo ninja install
+ninja -Cbuild
+sudo ninja -Cbuild install
 ```
 `conf_llvm.sh` might fail for the build32 part of the script. Ignore that for now.
 
@@ -73,10 +72,9 @@ Before configuring Mesa, you need to install meson from the repository linked at
 
 Go to the mesa directory and type:
 ```
-../conf_mesa_meson.sh
-cd build
-ninja
-sudo ninja install
+../conf_mesa.sh
+ninja -Cbuild
+sudo ninja -Cbuild install
 ```
 Mesa contains libGL, libEGL, libgbm, and libglapi, and drivers.
 
@@ -122,12 +120,19 @@ This step is unnecessary if you don't expect to test certain Steam games. You on
 
 It's the same as above except that you add these parameters:
 ```
-../conf_drm.sh -32
-../conf_mesa_meson.sh 32
+../conf_drm.sh 32
+../conf_mesa.sh 32
 ```
-I recommend that you clone separate directories for those, called `drm32` and `mesa32`. The symlink script below requires that directory layout.
 
 LLVM is already configured for the 32-bit build in its build32 directory. (if it didn't fail when you configured it above)
+
+Then the build steps for libdrm, llvm, and mesa use build32 instead of build:
+
+```
+ninja -Cbuild32
+sudo ninja -Cbuild32 install
+```
+
 
 
 Mesa development without `make install`
