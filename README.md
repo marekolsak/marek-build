@@ -7,10 +7,10 @@ Copy the files from this repository into the directory where you are going to cl
 
 Use git to clone these:
 - firmware: https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/ (open the page)
-- kernel: the internal AMD drm-next repository is recommended for AMD employees
+- kernel: the amd-staging-drm-next branch is recommended for AMD employees
 - libdrm: https://cgit.freedesktop.org/mesa/drm (open the page)
-- llvm: https://git.llvm.org/git/llvm.git (clone directly)
-- meson: https://github.com/mesonbuild/meson.git
+- llvm-project: https://github.com/llvm/llvm-project.git (clone directly)
+- meson: https://github.com/mesonbuild/meson.git (clone directly)
 - mesa: https://cgit.freedesktop.org/mesa/mesa (open the page)
 - xf86-video-amdgpu: https://cgit.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://github.com/waffle-gl/waffle (open the page)
@@ -51,7 +51,7 @@ ninja -Cbuild
 sudo ninja -Cbuild install
 ```
 
-**LLVM:** Go to the llvm directory and type:
+**LLVM:** Go to the llvm-project directory and type:
 ```
 ../conf_llvm.sh
 ninja -Cbuild
