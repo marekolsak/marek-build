@@ -8,15 +8,15 @@ Copy the files from this repository into the directory where you are going to cl
 Use git to clone these:
 - firmware: https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/ (open the page)
 - kernel: the amd-staging-drm-next branch is recommended. Use the internal AMD repository or the public mirror.
-- libdrm: https://cgit.freedesktop.org/mesa/drm (open the page)
+- libdrm: https://gitlab.freedesktop.org/mesa/drm (open the page)
 - llvm-project: https://github.com/llvm/llvm-project.git (clone directly)
 - meson: https://github.com/mesonbuild/meson.git (clone directly)
-- mesa: https://cgit.freedesktop.org/mesa/mesa (open the page)
-- xf86-video-amdgpu: https://cgit.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
+- mesa: https://gitlab.freedesktop.org/mesa/mesa (open the page)
+- xf86-video-amdgpu: https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://github.com/waffle-gl/waffle (open the page)
 - piglit: git://people.freedesktop.org/~mareko/piglit (clone directly) **Check out the `deqp` branch in piglit.**
 - deqp: https://android.googlesource.com/platform/external/deqp/ (clone directly)
-- glcts: TODO
+- glcts: https://github.com/KhronosGroup/VK-GL-CTS.git (clone directly)
 
 You can skip firmware if you already have firmware for your GPU.
 
