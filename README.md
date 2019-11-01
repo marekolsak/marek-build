@@ -14,8 +14,7 @@ Use git to clone these:
 - mesa: https://cgit.freedesktop.org/mesa/mesa (open the page)
 - xf86-video-amdgpu: https://cgit.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://github.com/waffle-gl/waffle (open the page)
-- piglit: git://people.freedesktop.org/~mareko/piglit (clone directly)
-    **Check out the `deqp` branch.**
+- piglit: git://people.freedesktop.org/~mareko/piglit (clone directly) **Check out the `deqp` branch in piglit.**
 - deqp: https://android.googlesource.com/platform/external/deqp/ (clone directly)
 - glcts: TODO
 
