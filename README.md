@@ -14,7 +14,9 @@ Use git to clone these:
 - mesa: https://cgit.freedesktop.org/mesa/mesa (open the page)
 - xf86-video-amdgpu: https://cgit.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://github.com/waffle-gl/waffle (open the page)
-- piglit: https://cgit.freedesktop.org/piglit (open the page)
+- piglit: git://people.freedesktop.org/~mareko/piglit (clone directly) **Check out the `deqp` branch.**
+- deqp: https://android.googlesource.com/platform/external/deqp/ (clone directly)
+- glcts: TODO
 
 You can skip firmware if you already have firmware for your GPU.
 
@@ -28,10 +30,12 @@ Configure and build everything in the listed order, because there are dependenci
 - xf86-video-amdgpu depends on libdrm and mesa
 - waffle depends on mesa
 - piglit depends on mesa and waffle
+- deqp depends on mesa
+- glcts depends on mesa
 
 
-Building
---------
+Building the driver
+-------------------
 
 Getting the firmware is not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. Installing the firmware only consists of copying files from the firmware repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
 
@@ -88,6 +92,10 @@ make -j16
 sudo make install
 ```
 
+
+Building OpenGL test suites
+---------------------------
+
 **Waffle:** Go to the waffle directory and type:
 ```
 ../conf_waffle.sh
@@ -101,6 +109,20 @@ sudo ninja install
 ninja
 ```
 There is no installation step for piglit.
+
+**DEQP:** Go to the deqp directory and type:
+```
+../conf_deqp.sh
+ninja
+```
+There is no installation step for DEQP.
+
+**GLCTS:** Go to the glcts directory and type:
+```
+../conf_glcts.sh
+ninja
+```
+There is no installation step for GLCTS.
 
 
 First test

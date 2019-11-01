@@ -37,5 +37,8 @@ create_links()
     #ln -sf $mesalibs/../src/gallium/targets/d3dadapter9/.libs/d3dadapter9.so  $libdir/d3d/d3dadapter9.so.1
 }
 
-create_links /home/marek/dev/${dir}/build   /usr/lib/x86_64-linux-gnu
-create_links /home/marek/dev/${dir}/build32 /usr/lib/i386-linux-gnu
+prefix=`dirname $0`
+prefix=`realpath $prefix`
+
+create_links $prefix/${dir}/build   /usr/lib/x86_64-linux-gnu
+create_links $prefix/${dir}/build32 /usr/lib/i386-linux-gnu
