@@ -7,7 +7,7 @@ Copy the files from this repository into the directory where you are going to cl
 
 Use git to clone these:
 - firmware: https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/ (open the page)
-- kernel: the amd-staging-drm-next branch is recommended for AMD employees
+- kernel: the amd-staging-drm-next branch is recommended. Use the internal AMD repository or the public mirror.
 - libdrm: https://cgit.freedesktop.org/mesa/drm (open the page)
 - llvm-project: https://github.com/llvm/llvm-project.git (clone directly)
 - meson: https://github.com/mesonbuild/meson.git (clone directly)
