@@ -14,9 +14,9 @@ Use git to clone these:
 - mesa: https://gitlab.freedesktop.org/mesa/mesa (open the page)
 - xf86-video-amdgpu: https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://github.com/waffle-gl/waffle (open the page)
-- piglit: git://people.freedesktop.org/~mareko/piglit (clone directly) **Check out the `deqp` branch in piglit.**
+- piglit: git://people.freedesktop.org/~mareko/piglit (clone directly) - **Check out the `deqp` branch in piglit.**
 - deqp: https://android.googlesource.com/platform/external/deqp/ (clone directly)
-- glcts: https://github.com/KhronosGroup/VK-GL-CTS.git (clone directly)
+- glcts: https://github.com/KhronosGroup/VK-GL-CTS.git glcts (clone directly into the glcts directory)
 
 You can skip firmware if you already have firmware for your GPU.
 
@@ -118,6 +118,8 @@ ninja
 There is no installation step for DEQP.
 
 **GLCTS:** Go to the glcts directory and type:
+
+You need to have a Khronos account and you need to upload your ssh public key into your Khronos Gitlab account. Then the following will fetch confidential Khronos source code that you need to build the desktop OpenGL Conformance Test Suite:
 ```
 ../conf_glcts.sh
 ninja
