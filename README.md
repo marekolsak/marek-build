@@ -196,12 +196,12 @@ If you want to run piglit and compare it against a baseline, specify the baselin
 The piglit results are stored in the `piglit-results` directory, while the HTML reports are stored separately in the `piglit-summary` directory. You can always regenerate the reports from the results or generate comparisons between two or more sets of results using the `./piglit summary html` command in the piglit repository.
 
 Other examples:
-- `./run-piglit.sh 04-11_19:35_VEGA12 -c`: force concurrency for all tests (recommended but most tests are already run concurrently)
-- `./run-piglit.sh -- -c`: if you want to specify a parameter but not a baseline, use `--` instead
-- `./run-piglit.sh 04-11_19:35_VEGA12 -c -x view`: exclude all tests containing `view` in their name
-- `./run-piglit.sh 04-11_19:35_VEGA12 -c -t clear`: run only tests containing `clear` in their name
-- `./run-piglit.sh 04-11_19:35_VEGA12 -c -t clear -x view`: run tests containing `clear` but not containing `view`
-- `./run-piglit.sh 04-11_19:35_VEGA12 -1 -v`: disable concurrency (`-1`) and print the name of each test (`-v`)
+- `./run-piglit.sh 04-11_19:35_VEGA12`: force concurrency for all tests (recommended but most tests are already run concurrently)
+- `./run-piglit.sh`: if you want to specify a parameter but not a baseline, use `--` instead
+- `./run-piglit.sh 04-11_19:35_VEGA12 -x view`: exclude all tests containing `view` in their name
+- `./run-piglit.sh 04-11_19:35_VEGA12 -t clear`: run only tests containing `clear` in their name
+- `./run-piglit.sh 04-11_19:35_VEGA12 -t clear -x view`: run tests containing `clear` but not containing `view`
+- `./run-piglit.sh 04-11_19:35_VEGA12 -j1`: disable concurrency (`-j1`)
 
 Disabling concurrency can help if you have an unstable kernel driver.
 
@@ -211,7 +211,7 @@ What to do if piglit hangs the GPU
 
 Run piglit with the `-isol` parameter before the baseline name:
 ```
-./run-piglit.sh -isol 04-11_19:35_VEGA12 -c
+./run-piglit.sh -isol 04-11_19:35_VEGA12
 ```
 `-isol` enables process isolation for tests, meaning that tests are run as separate processes instead of combined into one process. This will make full test executable command lines visible to `ps`.
 
