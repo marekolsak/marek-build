@@ -117,9 +117,9 @@ ninja
 ```
 There is no installation step for DEQP.
 
-**GLCTS:** Go to the glcts directory and type:
+**GLCTS:** You need to have a Khronos account and you need to upload your ssh public key into your Khronos Gitlab account. Then the following will fetch confidential Khronos source code that you need to build the desktop OpenGL Conformance Test Suite:
 
-You need to have a Khronos account and you need to upload your ssh public key into your Khronos Gitlab account. Then the following will fetch confidential Khronos source code that you need to build the desktop OpenGL Conformance Test Suite:
+Go to the glcts directory and type:
 ```
 ../conf_glcts.sh
 ninja
