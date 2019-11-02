@@ -3,6 +3,29 @@ cd `dirname $0`/piglit
 
 # run-piglit.sh [-isol] [-gpu] [-prime] [-cts] [BASELINE|--] [piglit params]
 
+prefix=`dirname $0`
+prefix=`realpath $prefix`
+
+export PIGLIT_SOURCE_DIR=$prefix/piglit
+
+export PIGLIT_KHR_GL_BIN=$prefix/glcts/external/openglcts/modules/glcts
+export PIGLIT_DEQP_EGL_BIN=$prefix/deqp/modules/egl/deqp-egl
+export PIGLIT_DEQP_GLES2_BIN=$prefix/deqp/modules/gles2/deqp-gles2
+export PIGLIT_DEQP_GLES3_BIN=$prefix/deqp/modules/gles3/deqp-gles3
+export PIGLIT_DEQP_GLES31_BIN=$prefix/deqp/modules/gles31/deqp-gles31
+
+export PIGLIT_KHRGL45_MUSTPASS=$prefix/glcts/external/openglcts/modules/gl_cts/data/mustpass/gl/khronos_mustpass/4.6.1.x/gl45-master.txt
+export PIGLIT_DEQP_EGL_MUSTPASS=$prefix/deqp/android/cts/master/egl-master.txt
+export PIGLIT_DEQP2_MUSTPASS=$prefix/deqp/android/cts/master/gles2-master.txt
+export PIGLIT_DEQP3_MUSTPASS=$prefix/deqp/android/cts/master/gles3-master.txt
+export PIGLIT_DEQP31_MUSTPASS=$prefix/deqp/android/cts/master/gles31-master.txt
+
+export PIGLIT_KHR_GL_EXTRA_ARGS=--deqp-visibility=hidden
+export PIGLIT_DEQP_EGL_EXTRA_ARGS=--deqp-visibility=hidden
+export PIGLIT_DEQP_GLES2_EXTRA_ARGS=--deqp-visibility=hidden
+export PIGLIT_DEQP_GLES3_EXTRA_ARGS=--deqp-visibility=hidden
+export PIGLIT_DEQP_GLES31_EXTRA_ARGS=--deqp-visibility=hidden
+
 ISOLATION=0
 if test "x$1" = "x-isol"; then
     ISOLATION=1
@@ -11,7 +34,7 @@ fi
 
 DISABLE="-x maxsize -x max[_-].*size -x maxuniformblocksize -x robustness.*infinite_loop -x deqp-gles31.functional.ssbo.layout.random.all_shared_buffer.48"
 
-PROFILE="quick"
+PROFILE="khr_gl45 deqp_gles31 deqp_gles2 deqp_gles3 deqp_egl quick"
 
 if test "x$1" = "x-gpu"; then
     PROFILE="gpu"
@@ -71,8 +94,9 @@ echo "Name: $NAME"
 export MESA_GLSL_CACHE_DISABLE=1
 export MESA_DEBUG=silent
 export PIGLIT_NO_FAST_SKIP=1
+export NIR_VALIDATE=1
 
-./piglit run --process-isolation $ISOLATION $DISABLE -p gbm $@ $PROFILE "$RESULTS/${NAME}" || exit 1
+./piglit run --deqp-mustpass-list --process-isolation $ISOLATION $DISABLE -c -p gbm $@ $PROFILE "$RESULTS/${NAME}" || exit 1
 
 if test "x$BASELINE" != "x" && test "x$BASELINE" != "x--"; then
     ./piglit summary html -o "$SUMMARY/compare_${NAME}" "$RESULTS/${BASELINE}" "$RESULTS/${NAME}"
