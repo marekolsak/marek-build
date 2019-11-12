@@ -33,7 +33,7 @@ create_links()
 
     ln -sf $mesalibs/src/gallium/targets/va/libgallium_drv_video.so $libdir/dri/radeonsi_drv_video.so
 
-    mkdir -p $libdir/d3d
+    #mkdir -p $libdir/d3d
     #ln -sf $mesalibs/../src/gallium/targets/d3dadapter9/.libs/d3dadapter9.so  $libdir/d3d/d3dadapter9.so.1
 }
 
@@ -42,3 +42,5 @@ prefix=`realpath $prefix`
 
 create_links $prefix/${dir}/build   /usr/lib/x86_64-linux-gnu
 create_links $prefix/${dir}/build32 /usr/lib/i386-linux-gnu
+
+ln -sf $prefix/${dir}/src/util/00-mesa-defaults.conf /usr/share/drirc.d/00-mesa-defaults.conf
