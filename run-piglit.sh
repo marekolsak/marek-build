@@ -1,10 +1,11 @@
 #!/bin/bash
-cd `dirname $0`/piglit
 
 # run-piglit.sh [-isol] [-gpu] [-prime] [-cts] [BASELINE|--] [piglit params]
 
 prefix=`dirname $0`
 prefix=`realpath $prefix`
+
+cd `dirname $0`/piglit
 
 export PIGLIT_SOURCE_DIR=$prefix/piglit
 
