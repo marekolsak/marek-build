@@ -159,10 +159,10 @@ sudo ninja -Cbuild32 install
 
 
 
-Mesa development without `make install`
+Mesa development without `ninja install`
 ---------------------------------------
 
-You have to do `make install` for the first time, so that waffle and piglit can find the latest Mesa, but you don't have to do that for any subsequent rebuilds of Mesa if you want to use the following method.
+You have to do `ninja install` for Mesa for the first time, so that waffle and piglit can find the latest Mesa, but you don't have to do that for any subsequent rebuilds of Mesa if you want to use the following method.
 
 Run `make-mesa-symlinks.sh`. It will create symlinks pointing from the Mesa installation locations in `/usr/lib/....` into your `mesa` and `mesa32` directories. Now, rebuilding Mesa is all you need to make it visible to applications.
 
