@@ -13,7 +13,7 @@ Use git to clone these:
 - meson: https://github.com/mesonbuild/meson.git (clone directly)
 - mesa: https://gitlab.freedesktop.org/mesa/mesa (open the page)
 - xf86-video-amdgpu: https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
-- waffle: https://github.com/waffle-gl/waffle (open the page)
+- waffle: https://gitlab.freedesktop.org/mesa/waffle (open the page)
 - piglit: git://people.freedesktop.org/~mareko/piglit (clone directly) - **Check out the `deqp` branch in piglit.**
 - deqp: https://android.googlesource.com/platform/external/deqp/ (clone directly)
 - glcts: https://github.com/KhronosGroup/VK-GL-CTS.git glcts (clone directly into the glcts directory)
