@@ -15,7 +15,7 @@ export PIGLIT_DEQP_GLES2_BIN=$prefix/deqp/modules/gles2/deqp-gles2
 export PIGLIT_DEQP_GLES3_BIN=$prefix/deqp/modules/gles3/deqp-gles3
 export PIGLIT_DEQP_GLES31_BIN=$prefix/deqp/modules/gles31/deqp-gles31
 
-export PIGLIT_KHRGL45_MUSTPASS=$prefix/glcts/external/openglcts/modules/gl_cts/data/mustpass/gl/khronos_mustpass/4.6.1.x/gl45-master.txt
+export PIGLIT_KHRGL45_MUSTPASS=$prefix/glcts/external/openglcts/modules/gl_cts/data/mustpass/gl/khronos_mustpass/4.6.1.x/gl46-master.txt
 export PIGLIT_DEQP_EGL_MUSTPASS=$prefix/deqp/android/cts/master/egl-master.txt
 export PIGLIT_DEQP2_MUSTPASS=$prefix/deqp/android/cts/master/gles2-master.txt
 export PIGLIT_DEQP3_MUSTPASS=$prefix/deqp/android/cts/master/gles3-master.txt
@@ -33,7 +33,7 @@ if test "x$1" = "x-isol"; then
     shift 1
 fi
 
-DISABLE="-x maxsize -x max[_-].*size -x maxuniformblocksize -x robustness.*infinite_loop -x deqp-gles31.functional.ssbo.layout.random.all_shared_buffer.48"
+DISABLE="-x maxsize -x max[_-].*size -x maxuniformblocksize -x robustness.*infinite_loop -x deqp-gles31.functional.ssbo.layout.random.all_shared_buffer.48 -x ext_external_object"
 
 PROFILE="khr_gl45 deqp_gles31 deqp_gles2 deqp_gles3 deqp_egl quick"
 
@@ -96,6 +96,7 @@ export MESA_GLSL_CACHE_DISABLE=1
 export MESA_DEBUG=silent
 export PIGLIT_NO_FAST_SKIP=1
 export NIR_VALIDATE=1
+export GLSL_VALIDATE=1
 
 ./piglit run --deqp-mustpass-list --process-isolation $ISOLATION $DISABLE -c -p gbm $@ $PROFILE "$RESULTS/${NAME}" || exit 1
 

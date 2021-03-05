@@ -1,35 +1,37 @@
 #!/bin/bash
 
-mesa_cflags="-fno-omit-frame-pointer"
-mesa_ldflags="$mesa_cflags -fuse-ld=gold"
-
 if test x$1 = x32; then
-    is64bit=false
-    archdir=i386-linux-gnu
-    dri_drivers=
+    arch=i386-linux-gnu
+    buildtype=release
+
     gallium_drivers=radeonsi
     vulkandrv=
-    omx=disabled
+    dri_drivers=
+    others="-Dplatforms=x11 -Dgallium-vdpau=false -Dgallium-va=false -Dpkg_config_path=/usr/lib/$arch/pkgconfig"
 
     export CC="gcc -m32"
     export CXX="g++ -m32"
 else
-    is64bit=true
-    archdir=x86_64-linux-gnu
-    dri_drivers=
-    gallium_drivers=radeonsi,swrast
-    vulkandrv=amd
-    omx=bellagio
+    arch=x86_64-linux-gnu
+    buildtype=debugoptimized
+
+    #buildtype=release
+    #profile="-g -fno-omit-frame-pointer"
+
+    #buildtype=debug
+
+    gallium_drivers=radeonsi,swrast #,zink,r300,r600,d3d12,svga,etnaviv,freedreno,iris,kmsro,lima,nouveau,panfrost,svga,swr,tegra,v3d,vc4,virgl,i915
+    vulkandrv=amd #,swrast
+    dri_drivers= #r100,r200,nouveau,i915,i965
+
+    #others="-Dgallium-xa=true -Dgallium-nine=true -Dgallium-omx=bellagio -Dbuild-tests=true"
+    #others="-Dbuild-tests=true"
 fi
+
 
 rm -r build$1
 
-meson build$1 --prefix /usr --libdir /usr/lib/$archdir --buildtype debugoptimized \
-	--native-file `dirname $0`/llvm_config_$archdir.cfg \
-	-Dc_args="$mesa_cflags" -Dcpp_args="$mesa_cflags" \
-	-Dc_link_args="$mesa_ldflags" -Dcpp_link_args="$mesa_ldflags" \
-	-Dpkg_config_path=/usr/lib/$archdir/pkgconfig -Dgallium-xa=false \
-	-Dgallium-vdpau=$is64bit -Dgallium-va=$is64bit -Dgallium-omx=$omx -Dgallium-xvmc=false \
-	-Dplatforms=x11,drm,surfaceless -Dgallium-drivers=$gallium_drivers \
-	-Ddri-drivers=$dri_drivers -Dvulkan-drivers=$vulkandrv \
-	-Dlibunwind=$is64bit
+meson build$1 --prefix /usr --libdir /usr/lib/$arch --buildtype $buildtype -Dlibunwind=false \
+	-Dc_link_args=-fuse-ld=gold -Dcpp_link_args=-fuse-ld=gold --native-file `dirname $0`/llvm_config_$arch.cfg \
+	-Dgallium-drivers=$gallium_drivers -Ddri-drivers=$dri_drivers -Dvulkan-drivers=$vulkandrv \
+	-Dc_args="$profile" -Dcpp_args="$profile" $others
