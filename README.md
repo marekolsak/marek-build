@@ -14,9 +14,9 @@ Use git to clone these:
 - mesa: https://gitlab.freedesktop.org/mesa/mesa (open the page)
 - xf86-video-amdgpu: https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://gitlab.freedesktop.org/mesa/waffle (open the page)
-- piglit: git://people.freedesktop.org/~mareko/piglit (clone directly) - **Check out the `deqp` branch in piglit.**
+- piglit: https://gitlab.freedesktop.org/mareko/piglit.git (clone directly) - **Check out the `deqp` branch in piglit.**
 - deqp: https://android.googlesource.com/platform/external/deqp/ (clone directly)
-- glcts: https://github.com/KhronosGroup/VK-GL-CTS.git glcts (clone directly into the glcts directory)
+- glcts: https://github.com/KhronosGroup/VK-GL-CTS.git glcts (clone directly into the glcts directory) - **Check out commit 26b37d8c2 because nothing compiles after that.**
 
 You can skip firmware if you already have firmware for your GPU.
 
