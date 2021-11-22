@@ -68,7 +68,7 @@ sudo ldconfig
 Now ld will be able to find LLVM.
 
 
-**Mesa:** If you want to use LLVM installed in the standard directory paths, remove `--native-file` from `conf_mesa_meson.sh`. Otherwise, it will get the LLVM installation path from the llvm_config_* files.
+**Mesa:** If you want to use LLVM installed in the standard directory paths, remove `--native-file` from `conf_mesa.sh`. Otherwise, it will get the LLVM installation path from the llvm_config_* files.
 
 <!-- Before configuring Mesa, you need to install meson from the repository linked at the beginning. -->
 
