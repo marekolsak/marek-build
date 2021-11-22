@@ -9,8 +9,7 @@ Use git to clone these:
 - firmware: https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/ (open the page)
 - kernel: the amd-staging-drm-next branch is recommended. Use the internal AMD repository or the public mirror of the branch at https://gitlab.freedesktop.org/agd5f/linux/.
 - libdrm: https://gitlab.freedesktop.org/mesa/drm (open the page)
-- llvm-project: https://github.com/llvm/llvm-project.git (clone directly)
-<!-- - meson: https://github.com/mesonbuild/meson.git (clone directly) -->
+- llvm-project: https://github.com/llvm/llvm-project.git (clone directly) <!-- - meson: https://github.com/mesonbuild/meson.git (clone directly) -->
 - mesa: https://gitlab.freedesktop.org/mesa/mesa (open the page)
 - xf86-video-amdgpu: https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://gitlab.freedesktop.org/mesa/waffle (open the page)
