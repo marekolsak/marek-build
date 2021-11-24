@@ -2,16 +2,18 @@
 
 if test x$1 = x32; then
     arch=i386-linux-gnu
+    va=disabled
     buildtype=release
     profile="-g"
 
     gallium_drivers=radeonsi
-    others="-Dplatforms=x11 -Dgallium-vdpau=false -Dgallium-va=false -Dpkg_config_path=/usr/lib/$arch/pkgconfig" # -Dbuild-tests=true"
+    others="-Dplatforms=x11 -Dgallium-vdpau=disabled -Dpkg_config_path=/usr/lib/$arch/pkgconfig" # -Dbuild-tests=true"
 
     export CC="gcc -m32"
     export CXX="g++ -m32"
 else
     arch=x86_64-linux-gnu
+    va=enabled
 
     # comment or uncomment the following settings
 
@@ -39,7 +41,7 @@ fi
 
 rm -r build$1
 
-meson build$1 --prefix /usr --libdir /usr/lib/$arch --buildtype $buildtype -Dlibunwind=false -Dglvnd=true \
+meson build$1 --prefix /usr --libdir /usr/lib/$arch --buildtype $buildtype -Dlibunwind=disabled -Dglvnd=true \
 	-Dc_link_args=-fuse-ld=gold -Dcpp_link_args=-fuse-ld=gold --native-file `dirname $0`/llvm_config_$arch.cfg \
 	-Dgallium-drivers=$gallium_drivers -Ddri-drivers=$dri_drivers -Dvulkan-drivers=$vulkandrv \
-	-Dc_args="$profile" -Dcpp_args="$profile" $repl $others
+	-Dc_args="$profile" -Dcpp_args="$profile" $repl $others -Dgallium-va=$va
