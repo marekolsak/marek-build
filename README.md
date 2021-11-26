@@ -3,6 +3,8 @@ Marek's approach to building AMD GPU drivers for driver development
 
 You are going to need meson, autoconf, automake, libtool, cmake, ninja, gcc, g++, gcc-multilib, g++-multilib and many lib development packages required by all the components.
 
+IMPORTANT: Install "spirv-tools". It's required by some piglit tests, but piglit doesn't check for that dependency.
+
 Copy the files from this repository into the directory where you are going to clone all git repositories, so that the files are above the repository directories.
 
 Use git to clone these:
