@@ -15,7 +15,7 @@ Use git to clone these:
 - mesa: https://gitlab.freedesktop.org/mesa/mesa (open the page)
 - xf86-video-amdgpu: https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
 - waffle: https://gitlab.freedesktop.org/mesa/waffle (open the page)
-- piglit: https://gitlab.freedesktop.org/mareko/piglit.git (clone directly) - **Check out the `deqp` branch in piglit.**
+- piglit: https://gitlab.freedesktop.org/mesa/piglit (open the page)
 - deqp: https://android.googlesource.com/platform/external/deqp/ (clone directly)
 - glcts: https://github.com/KhronosGroup/VK-GL-CTS.git glcts (clone directly into the glcts directory) - **Check out commit 26b37d8c2 because nothing compiles after that.**
 
@@ -166,44 +166,106 @@ Run `make-mesa-symlinks.sh`. It will create symlinks pointing from the Mesa inst
 Piglit regression testing
 -------------------------
 
-Use `run-piglit.sh` from this repository. It will run piglit and create an HTML report in the `piglit-summary` directory.
+Install Rust's package manager Cargo: https://www.rust-lang.org/tools/install
 
-To run piglit for the first time, type:
+Then install `deqp-runner`:
 ```
-./run-piglit.sh
+cargo install deqp-runner
+```
+(adding `$HOME/.cargo/bin` to `PATH` will make it easier to run `deqp-runner`)
+
+
+Then you can use the `radeonsi-run-tests.py` script to run all the tests suites.
+The script is located in `mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py` (again, adding this path to `$PATH` avoids typing the whole path each time).
+
+`radeonsi-run-tests.py` needs to know where it can find piglit, glcts and deqp. If you followed the above installation steps, you can either:
+- run it like this: `./mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py --parent-path $PWD`
+- or define `MAREKO_BUILD_PATH=$PWD` and then run it directly: `./mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py` (or `radeonsi-run-tests.py` if your `$PATH` variable contains `mesa/src/gallium/drivers/radeonsi/ci`)
+
+The alternative is to pass the path of each test suite (see `--piglit-path`, `--glcts-path` and `--deqp-path` options).
+
+By default the script will write the results in `/tmp`, eg: `/tmp/2022-01-07-16-59-39`.
+
+If your machine has multiple GPUs, you can select the one to test with `--gpu N`.
+
+Expected tests results for some GPU types are stored directly in Mesa, so running `radeonsi-run-tests.py` will compare the results again this baseline. If the tests results are identical, the output will look like this:
+```
+$ radeonsi-run-tests.py
+Tested GPU: 'AMD Radeon RX 6800 XT' (sienna_cichlid)
+Output folder: '/tmp/2022-01-07-13-07-48'
+Running piglit tests [baseline .../sienna_cichlid-piglit-quick-fail.csv]  ... Completed in 397 seconds
+Running  GLCTS tests [baseline .../sienna_cichlid-glcts-fail.csv]  ... Completed in 338 seconds
+Running   dEQP tests [baseline .../sienna_cichlid-deqp-fail.csv]  ... Completed in 649 seconds
 ```
 
-It will print the name of the run, for example:
+If no baseline is available, or if new errors were found, the output will be similar to:
 ```
-Name: 04-11_19:35_VEGA12
+Tested GPU: 'AMD Radeon RX 6800 XT' (sienna_cichlid)
+Output folder: '/tmp/2022-01-07-13-07-48'
+Running piglit tests [baseline .../sienna_cichlid-piglit-quick-fail.csv]  ... Completed in 397 seconds
+New errors. Check /tmp/2022-01-07-13-07-48/new_baseline/sienna_cichlid-piglit-quick-fail.csv
+Running  GLCTS tests [baseline .../sienna_cichlid-glcts-fail.csv]  ... Completed in 338 seconds
+New errors. Check /tmp/2022-01-07-13-07-48/new_baseline/sienna_cichlid-glcts-fail.csv
+Running   dEQP tests [baseline .../sienna_cichlid-deqp-fail.csv]  ... Completed in 649 seconds
+New errors. Check /tmp/2022-01-07-13-07-48/new_baseline/sienna_cichlid-deqp-fail.csv
 ```
-The name of the run will also be on the first row of the HTML report table.
 
-If you want to run piglit and compare it against a baseline, specify the baseline name on the command line. It will create an HTML report comparing your current run with the baseline:
+The `*-fail.csv` files contain the unexpected results. `radeonsi-run-tests.py` has a test filter feature, and these files can be used to easily re-run the failed tests.
+Here's an example, which also uses the `-v` (verbose) option:
+
 ```
-./run-piglit.sh 04-11_19:35_VEGA12
+$ radeonsi-run-tests.py -v -t /tmp/2022-01-07-13-07-48/new_baseline/sienna_cichlid-piglit-quick-fail.csv
+Tested GPU: 'AMD Radeon RX 6800 XT' (sienna_cichlid)
+Output folder: '/tmp/2022-01-07-17-06-01'
+Running piglit tests
+[baseline .../sienna_cichlid-piglit-quick-fail.csv]
+| Running 4 piglit tests on 16 threads
+| Pass: 0, Duration: 0
+| ERROR - Test spec@!opengl 1.1@windowoverlap: Fail: See "/tmp/2022-01-07-17-06-01/piglit/piglit.spec@!opengl 1.1@windowoverlap.log"
+| ERROR - Test spec@!opengl 1.1@windowoverlap: Fail: See "/tmp/2022-01-07-17-06-01/piglit/piglit.spec@!opengl 1.1@windowoverlap.log"
+| ERROR - Test spec@ext_texture_integer@fbo-integer: UnexpectedPass: See "/tmp/2022-01-07-17-06-01/piglit/piglit.spec@ext_texture_integer@fbo-integer.log"
+| ERROR - Test spec@ext_texture_integer@fbo-integer: UnexpectedPass: See "/tmp/2022-01-07-17-06-01/piglit/piglit.spec@ext_texture_integer@fbo-integer.log"
+| ERROR - Test spec@arb_direct_state_access@gettextureimage-formats: UnexpectedPass: See "/tmp/2022-01-07-17-06-01/piglit/piglit.spec@arb_direct_state_access@gettextureimage-formats.log"
+| ERROR - Test spec@arb_direct_state_access@gettextureimage-formats: UnexpectedPass: See "/tmp/2022-01-07-17-06-01/piglit/piglit.spec@arb_direct_state_access@gettextureimage-formats.log"
+| Pass: 1, Fail: 1, UnexpectedPass: 2, Duration: 0, Remaining: 0
+|
+| Slowest tests:
+| spec@arb_direct_state_access@gettextureimage-formats (0.29s)
+| spec@arb_direct_state_access@gettextureimage-formats init-by-rendering (0.26s)
+| spec@ext_texture_integer@fbo-integer (0.08s)
+| spec@!opengl 1.1@windowoverlap (0.00s)
+|
+| Some failures found:
+| spec@!opengl 1.1@windowoverlap,Fail
+| spec@arb_direct_state_access@gettextureimage-formats,UnexpectedPass
+| spec@ext_texture_integer@fbo-integer,UnexpectedPass
+|
+└ Completed in 0 seconds
+New errors. Check /tmp/2022-01-07-17-06-01/new_baseline/sienna_cichlid-piglit-quick-fail.csv
+Running  GLCTS tests
+[baseline .../sienna_cichlid-glcts-fail.csv]
+| Running dEQP on 16 threads in 1-test groups
+| Pass: 0, Duration: 0
+| Pass: 0, Duration: 0
+|
+└ Completed in 0 seconds
+Running   dEQP tests
+[baseline .../sienna_cichlid-deqp-fail.csv]
+| Running dEQP on 16 threads in 1-test groups
+| Running dEQP on 16 threads in 1-test groups
+| Running dEQP on 16 threads in 1-test groups
+| Running dEQP on 16 threads in 1-test groups
+| Pass: 0, Duration: 0
+| Pass: 0, Duration: 0
+|
+└ Completed in 0 seconds
 ```
-The piglit results are stored in the `piglit-results` directory, while the HTML reports are stored separately in the `piglit-summary` directory. You can always regenerate the reports from the results or generate comparisons between two or more sets of results using the `./piglit summary html` command in the piglit repository.
 
-Other examples:
-- `./run-piglit.sh 04-11_19:35_VEGA12 -x view`: exclude all tests containing `view` in their name
-- `./run-piglit.sh 04-11_19:35_VEGA12 -t clear`: run only tests containing `clear` in their name
-- `./run-piglit.sh 04-11_19:35_VEGA12 -t clear -x view`: run tests containing `clear` but not containing `view`
-- `./run-piglit.sh 04-11_19:35_VEGA12 -j1`: disable concurrency
-
-All those options and more can be found by running `piglit/piglit run --help`.
-
-Disabling concurrency can help if you have an unstable kernel driver.
-
+As `radeonsi-run-tests.py` uses multiple processes / threads, the `-j` option can be used to control how many are spawned.
+Lastly, there are several `--no-xxx` option to disable running specific tests suites (eg: `--no-deqp-egl`). Use `-h` to see all options.
 
 
 What to do if piglit hangs the GPU
 ----------------------------------
-
-Run piglit with the `-isol` parameter before the baseline name:
-```
-./run-piglit.sh -isol 04-11_19:35_VEGA12
-```
-`-isol` enables process isolation for tests, meaning that tests are run as separate processes instead of combined into one process. This will make full test executable command lines visible to `ps`.
 
 When it hangs, run `ps aux|grep home` over ssh to get command lines of currently running tests.  After reboot, you can run each line separately to find the hanging test.
