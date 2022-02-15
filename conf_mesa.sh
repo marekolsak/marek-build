@@ -42,6 +42,6 @@ fi
 rm -r build$1
 
 meson build$1 --prefix /usr --libdir /usr/lib/$arch --buildtype $buildtype -Dlibunwind=disabled -Dglvnd=true \
-	-Dc_link_args=-fuse-ld=gold -Dcpp_link_args=-fuse-ld=gold --native-file `dirname $0`/llvm_config_$arch.cfg \
+	--native-file `dirname $0`/llvm_config_$arch.cfg \
 	-Dgallium-drivers=$gallium_drivers -Ddri-drivers=$dri_drivers -Dvulkan-drivers=$vulkandrv \
 	-Dc_args="$profile" -Dcpp_args="$profile" $repl $others -Dgallium-va=$va

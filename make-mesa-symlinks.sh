@@ -12,6 +12,11 @@ create_links()
     mesalibs=$1
     libdir=$2
 
+    if test ! -f $mesalibs/src/glx/libGLX_mesa.so; then
+        echo $mesalibs/src/glx/libGLX_mesa.so: not found
+        exit 1
+    fi
+
     ln -sf $mesalibs/src/glx/libGLX_mesa.so             $libdir/libGLX_mesa.so.0.0.0
     ln -sf $mesalibs/src/egl/libEGL_mesa.so             $libdir/libEGL_mesa.so.0.0.0
     ln -sf $mesalibs/src/mapi/shared-glapi/libglapi.so  $libdir/libglapi.so.0.0.0
@@ -32,7 +37,7 @@ create_links()
     fi
 }
 
-prefix=`dirname $0`
+prefix=`pwd`
 prefix=`realpath $prefix`
 
 create_links $prefix/${dir}/build   /usr/lib/x86_64-linux-gnu true
