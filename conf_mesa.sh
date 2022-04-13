@@ -1,5 +1,9 @@
 #!/bin/bash
 
+prefix=${PREFIX:-/usr}
+# for general development (optimized with assertions)
+buildtype=${BUILD_TYPE:-debugoptimized}
+
 if test x$1 = x32; then
     arch=i386-linux-gnu
     va=disabled
@@ -16,9 +20,6 @@ else
     va=enabled
 
     # comment or uncomment the following settings
-
-    # for general development (optimized with assertions)
-    buildtype=debugoptimized
 
     # for benchmarking (fastest, optimized without assertions)
     #buildtype=release; profile="-g"
@@ -41,7 +42,7 @@ fi
 
 rm -r build$1
 
-meson build$1 --prefix /usr --libdir /usr/lib/$arch --buildtype $buildtype -Dlibunwind=disabled -Dglvnd=true \
+meson build$1 --prefix $prefix --libdir $prefix/lib/$arch --buildtype $buildtype -Dlibunwind=disabled -Dglvnd=true \
 	--native-file `dirname $0`/llvm_config_$arch.cfg \
 	-Dgallium-drivers=$gallium_drivers -Ddri-drivers=$dri_drivers -Dvulkan-drivers=$vulkandrv \
 	-Dc_args="$profile" -Dcpp_args="$profile" $repl $others -Dgallium-va=$va
