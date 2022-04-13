@@ -98,7 +98,7 @@ Building OpenGL test suites
 ```
 ../conf_waffle.sh
 ninja
-sudo ninja install
+sudo ninja install -C build
 ```
 
 There is no installation step for the test suites. They are run from the build directory directly.

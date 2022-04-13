@@ -1,7 +1,11 @@
 #!/bin/bash
 
-cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-	-Dwaffle_has_gbm=ON -Dwaffle_has_glx=ON -Dwaffle_has_x11_egl=ON
+prefix=${PREFIX:-/usr}
+buildtype=${BUILD_TYPE:-debugoptimized}
+
+rm -r build
+mkdir build
+meson build --prefix $prefix --libdir $prefix/lib/$arch --datadir $prefix/share --buildtype $buildtype
 
 echo
 echo !!! Make sure this output contains: Supported platforms: ... gbm !!!
