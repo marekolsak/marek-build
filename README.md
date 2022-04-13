@@ -17,7 +17,7 @@ Use git to clone these:
 - waffle: https://gitlab.freedesktop.org/mesa/waffle (open the page)
 - piglit: https://gitlab.freedesktop.org/mesa/piglit (open the page)
 - deqp: https://android.googlesource.com/platform/external/deqp/ (clone directly)
-- glcts: https://github.com/KhronosGroup/VK-GL-CTS.git glcts (clone directly into the glcts directory) - **Check out commit 26b37d8c2 because nothing compiles after that.**
+- glcts: https://github.com/KhronosGroup/VK-GL-CTS.git glcts (clone directly into the glcts directory) - **Check out branch opengl-cts-4.6.2 **
 
 You can skip firmware if you already have firmware for your GPU.
 
