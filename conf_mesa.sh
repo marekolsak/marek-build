@@ -11,7 +11,7 @@ if test x$1 = x32; then
     profile="-g"
 
     gallium_drivers=radeonsi
-    others="-Dplatforms=x11 -Dgallium-vdpau=disabled -Dpkg_config_path=/usr/lib/$arch/pkgconfig" # -Dbuild-tests=true"
+    others="-Dplatforms=x11 -Dgallium-vdpau=disabled -Dpkg_config_path=${prefix}/lib/$arch/pkgconfig" # -Dbuild-tests=true"
 
     export CC="gcc -m32"
     export CXX="g++ -m32"
@@ -30,9 +30,9 @@ else
     # for best debugging (no optimizations)
     #buildtype=debug
 
-    gallium_drivers=radeonsi,swrast # ,r300,r600,crocus,zink,virgl,nouveau,d3d12,svga,etnaviv,freedreno,iris,kmsro,lima,panfrost,tegra,v3d,vc4,asahi,i915
+    gallium_drivers=${GALLIUM_DRIVERS:-radeonsi,swrast} # ,r300,r600,crocus,zink,virgl,nouveau,d3d12,svga,etnaviv,freedreno,iris,kmsro,lima,panfrost,tegra,v3d,vc4,asahi,i915
 
-    #vulkandrv=amd #,swrast
+    vulkandrv=${VULKAN_DRIVERS:-} #,swrast
 
     #others="-Dgallium-xa=true -Dgallium-nine=true -Dgallium-omx=bellagio -Dbuild-tests=true -Dtools=glsl,nir"
     #others="-Dbuild-tests=true -Dtools=glsl,nir"
