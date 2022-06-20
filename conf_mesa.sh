@@ -37,6 +37,7 @@ else
 
     #others="-Dgallium-xa=true -Dgallium-nine=true -Dgallium-omx=bellagio -Dbuild-tests=true -Dtools=glsl,nir"
     #others="-Dbuild-tests=true -Dtools=glsl,nir"
+    videocodecs=h264dec,h264enc,h265dec,h265enc
 fi
 
 
@@ -45,4 +46,4 @@ rm -r build$1
 meson build$1 --prefix $prefix --libdir $prefix/lib/$arch --buildtype $buildtype -Dlibunwind=disabled -Dglvnd=true \
 	--native-file `dirname $0`/llvm_config_$arch.cfg \
 	-Dgallium-drivers=$gallium_drivers -Ddri-drivers=$dri_drivers -Dvulkan-drivers=$vulkandrv \
-	-Dc_args="$profile" -Dcpp_args="$profile" $repl $others -Dgallium-va=$va
+	-Dc_args="$profile" -Dcpp_args="$profile" $repl $others -Dgallium-va=$va -Dvideo-codecs=$videocodecs
