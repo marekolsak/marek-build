@@ -93,6 +93,8 @@ make -j`nproc`
 sudo make install
 ```
 
+The above instructions overwrite distribution libraries and header files. If your Linux distribution updates them, you'll have to reinstall them from source, only libdrm and Mesa.
+
 
 Building OpenGL test suites
 ---------------------------
@@ -144,6 +146,8 @@ After you run `ninja install` for Mesa, you don't have to install it every time 
 ```bash
 marek-build/make-mesa-symlinks.sh
 ```
+
+If your Linux distribution updates packages and overwrites your symlinks, just re-run the script.
 
 
 Piglit regression testing
