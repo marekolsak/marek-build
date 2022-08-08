@@ -1,0 +1,27 @@
+[alias]
+	l = log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold cyan)<%an>%Creset'
+	co = checkout
+	cp = cherry-pick
+	r = rebase
+	ro = rebase origin
+	ri = rebase -i
+	rio = rebase -i origin
+	rc = rebase --continue
+	b = branch
+	bg = bisect good
+	bb = bisect bad
+	a = commit --amend -v
+	aa = commit --amend -a -v
+	d = diff
+	dc = diff --cached
+	s = show
+	st = status
+[push]
+	default = simple
+[rebase]
+	stat = true
+[branch]
+	autosetuprebase = always
+[diff]
+	renames = true
+        renameLimit = 5000

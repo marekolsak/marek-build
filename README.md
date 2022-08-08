@@ -1,39 +1,49 @@
 Marek's approach to building AMD GPU drivers for driver development
 ===================================================================
 
-You are going to need meson, autoconf, automake, libtool, cmake, ninja, gcc, g++, gcc-multilib, g++-multilib and many lib development packages required by all the components.
+You are going to need meson, autoconf, automake, libtool, cmake, ninja, gcc, g++, gcc-multilib, g++-multilib, spirv-tools and many lib development packages. The configure scripts will print errors if some dependency is missing.
 
-IMPORTANT: Install "spirv-tools". It's required by some piglit tests, but piglit doesn't check for that dependency.
+These instructions have only been tested on Ubuntu.
 
-Copy the files from this repository into the directory where you are going to clone all git repositories, so that the files are above the repository directories.
+Cloning repos
+-------------
 
-Use git to clone these:
-- firmware: https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/ (open the page)
-- kernel: the amd-staging-drm-next branch is recommended. Use the internal AMD repository or the public mirror of the branch at https://gitlab.freedesktop.org/agd5f/linux/.
-- libdrm: https://gitlab.freedesktop.org/mesa/drm (open the page)
-- llvm-project: https://github.com/llvm/llvm-project.git (clone directly) <!-- - meson: https://github.com/mesonbuild/meson.git (clone directly) -->
-- mesa: https://gitlab.freedesktop.org/mesa/mesa (open the page)
-- xf86-video-amdgpu: https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu (open the page)
-- waffle: https://gitlab.freedesktop.org/mesa/waffle (open the page)
-- piglit: https://gitlab.freedesktop.org/mesa/piglit (open the page)
-- deqp: https://android.googlesource.com/platform/external/deqp/ (clone directly)
-- glcts: https://github.com/KhronosGroup/VK-GL-CTS.git glcts (clone directly into the glcts directory) - **Check out branch opengl-cts-4.6.2 **
+Clone with ssh for the repositories where you can push.
 
-You can skip firmware if you already have firmware for your GPU.
+```bash
+git clone https://github.com/marekolsak/marek-build.git
 
-You can usually skip xf86-video-amdgpu. All distributions should ship a version that's a good enough.
+# These driver components are usually not necessary:
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git # Ideally use the AMD internal repository instead
+git clone https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu.git
 
-You can skip kernel and llvm if you don't intend to work on those. If you skip them, you will need llvm development packages.
+# For the driver:
+# Sometimes you can use the kernel and LLVM that come with your distribution
+git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next # Ideally use the AMD internal repository instead
+git clone https://gitlab.freedesktop.org/mesa/drm.git
+git clone https://github.com/llvm/llvm-project.git
+git clone https://gitlab.freedesktop.org/mesa/mesa.git
 
-Configure and build everything in the listed order, because there are dependencies:
-- kernel depends on firmware
-- libdrm and llvm don't depend on anything
-- mesa depends on libdrm and llvm
-- xf86-video-amdgpu depends on libdrm and mesa
-- waffle depends on mesa
-- piglit depends on mesa and waffle
-- deqp depends on mesa
-- glcts depends on mesa
+# For test suites:
+git clone https://gitlab.freedesktop.org/mesa/waffle.git
+git clone https://gitlab.freedesktop.org/mesa/piglit.git
+git clone https://android.googlesource.com/platform/external/deqp/
+git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b opengl-cts-4.6.2
+```
+
+**Build order for the driver:**
+- firmware
+- kernel (depends on firmware)
+- libdrm
+- llvm
+- mesa (depends on libdrm and llvm)
+- xf86-video-amdgpu (depends on libdrm and mesa)
+
+**Build order for test suites:**
+- waffle (depends on mesa) - install
+- piglit (depends on mesa and waffle) - don't install
+- deqp (depends on mesa) - don't install
+- glcts (depends on mesa) - don't install
 
 
 Building the driver
@@ -41,50 +51,43 @@ Building the driver
 
 Getting the firmware is not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
 
-**Most components require installation of additional development library packages. Follow error messages to resolve them.**
+This also includes instructions for building the 32-bit driver, which is only required by Steam and can be skipped if Steam is not needed.
 
-**Kernel:** Go to the kernel directory and type:
-```
-make menuconfig # (to create the config; just exit if you don't want to change anything)
-../build_kernel.sh
-```
-It will build and install the kernel.
+```bash
+# Kernel
+cd linux
+../marek-build/build_kernel.sh
 
-**libdrm:** Go to the libdrm directory and type:
-```
-../conf_drm.sh
+# libdrm
+cd drm
+../marek-build/conf_drm.sh
+../marek-build/conf_drm.sh 32
 ninja -Cbuild
+ninja -Cbuild32
 sudo ninja -Cbuild install
-```
+sudo ninja -Cbuild32 install
 
-**LLVM:** Go to the llvm-project directory and type:
-```
-../conf_llvm.sh
+# LLVM
+sudo cp ../marek-build/etc/ld.so.conf.d/marek_llvm.conf /etc/ld.so.conf.d/
+cd llvm-project
+../marek-build/conf_llvm.sh
 ninja -Cbuild
+ninja -Cbuild32
 sudo ninja -Cbuild install
-```
-LLVM is installed in `/usr/local/llvm`. You need to copy the contents of the `etc` directory from this repository into `/etc`. Then, type this to notify ld about it:
-```
+sudo ninja -Cbuild32 install
 sudo ldconfig
-```
-Now ld will be able to find LLVM.
 
-
-**Mesa:** If you want to use LLVM installed in the standard directory paths, remove `--native-file` from `conf_mesa.sh`. Otherwise, it will get the LLVM installation path from the llvm_config_* files.
-
-<!-- Before configuring Mesa, you need to install meson from the repository linked at the beginning. -->
-
-Go to the mesa directory and type:
-```
-../conf_mesa.sh
+# Mesa (conf_mesa.sh assumes that you don't use the LLVM that comes with your distribution)
+cd mesa
+../marek-build/conf_mesa.sh
+../marek-build/conf_mesa.sh 32
 ninja -Cbuild
+ninja -Cbuild32
 sudo ninja -Cbuild install
-```
-Mesa contains libGL, libEGL, libgbm, and libglapi, and drivers.
+sudo ninja -Cbuild32 install
 
-
-**xf86-video-amdgpu**: Go to the xf86-video-amdgpu directory and type:
-```
+# xf86-video-amdgpu
+cd xf86-video-amdgpu
 ./autogen --prefix=/usr
 make -j`nproc`
 sudo make install
@@ -94,32 +97,28 @@ sudo make install
 Building OpenGL test suites
 ---------------------------
 
-**Waffle:** Go to the waffle directory and type:
-```
-../conf_waffle.sh
+For GLCTS, you need a Khronos account and you need to upload your ssh public key into your Khronos Gitlab account. Then the conf_glcts.sh script will fetch additional Khronos source code that you need for building the desktop OpenGL Conformance Test Suite.
+
+```bash
+# Waffle
+cd waffle
+../marek-build/conf_waffle.sh
 ninja
-sudo ninja install -C build
-```
+sudo ninja install
 
-There is no installation step for the test suites. They are run from the build directory directly.
-
-**Piglit:** Go to the piglit directory and type:
-```
-../conf_piglit.sh
+# piglit
+cd piglit
+../marek-build/conf_piglit.sh
 ninja
-```
 
-**DEQP:** Go to the deqp directory and type:
-```
-../conf_deqp.sh
+# deqp
+cd deqp
+../marek-build/conf_deqp.sh
 ninja
-```
 
-**GLCTS:** You need to have a Khronos account and you need to upload your ssh public key into your Khronos Gitlab account. Then the conf_glcts.sh script will fetch confidential Khronos source code that you need for building the desktop OpenGL Conformance Test Suite.
-
-Go to the glcts directory and type:
-```
-../conf_glcts.sh
+# glcts
+cd glcts
+../marek-build/conf_glcts.sh
 ninja
 ```
 
@@ -127,40 +126,24 @@ ninja
 First test
 ----------
 
-To verify that everything is installed properly, run `driver-load-sanity-test` and `driver-render-sanity-test` from this repository. They have to pass for X to be able to even start. Those two are also the first tests to run when debugging X startup issues, because they use the same APIs as X (that is GBM + EGL).
+Verify that the driver is working without Xorg. If this works, Xorg will work too.
 
-Now reboot your machine and everything should work.
-
-X crashes can also be debugged via gdb over ssh: `sudo gdb /usr/lib/xorg/Xorg`
-
-
-Building 32-bit drivers
------------------------
-
-This step is unnecessary if you don't expect to test certain Steam games. You only need 32-bit libdrm, llvm, and Mesa. You don't need anything else.
-
-It's the same as above except that you add these parameters:
-```
-../conf_drm.sh 32
-../conf_mesa.sh 32
+```bash
+PIGLIT_PLATFORM=gbm piglit/bin/glinfo
+PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
 ```
 
-LLVM is already configured for the 32-bit build in its build32 directory.
-
-Then the build steps for libdrm, llvm, and mesa use build32 instead of build:
-
-```
-ninja -Cbuild32
-sudo ninja -Cbuild32 install
-```
+Xorg startup crashes can be debugged via gdb over ssh like this: `sudo gdb /usr/lib/xorg/Xorg`
 
 
 Mesa development without `ninja install`
 ---------------------------------------
 
-You have to do `ninja install` for Mesa for the first time, so that waffle and piglit can find the latest Mesa headers, but you don't have to do that for any subsequent rebuilds of Mesa if you want to use the following method.
+After you run `ninja install` for Mesa, you don't have to install it every time you rebuild it if you add symlinks from `/usr/lib` into your build directory. Then, you just build Mesa and the next started app will use it. There is a script that creates the symlinks:
 
-Run `make-mesa-symlinks.sh`. It will create symlinks pointing from the Mesa installation locations (`/usr/lib/....`) into your `mesa/build` and `mesa/build32` directories. Now, rebuilding Mesa is all you need for updating it.
+```bash
+marek-build/make-mesa-symlinks.sh
+```
 
 
 Piglit regression testing

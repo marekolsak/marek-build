@@ -30,10 +30,9 @@ else
     # for best debugging (no optimizations)
     #buildtype=debug
 
-    gallium_drivers=radeonsi,swrast # ,r300,r600,crocus,zink,virgl,nouveau,d3d12,svga,etnaviv,freedreno,iris,kmsro,lima,panfrost,tegra,v3d,vc4,asahi,i915 #,swr
+    gallium_drivers=radeonsi,swrast # ,r300,r600,crocus,zink,virgl,nouveau,d3d12,svga,etnaviv,freedreno,iris,kmsro,lima,panfrost,tegra,v3d,vc4,asahi,i915
 
     #vulkandrv=amd #,swrast
-    #dri_drivers=r100,r200,nouveau,i915,i965
 
     #others="-Dgallium-xa=true -Dgallium-nine=true -Dgallium-omx=bellagio -Dbuild-tests=true -Dtools=glsl,nir"
     #others="-Dbuild-tests=true -Dtools=glsl,nir"
