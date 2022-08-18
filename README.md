@@ -3,10 +3,10 @@ Marek's approach to building AMD GPU drivers for driver development
 
 These instructions have only been tested on Ubuntu.
 
-You are going to need meson, autoconf, automake, libtool, cmake, ninja, gcc, g++, gcc-multilib, g++-multilib, spirv-tools and many lib development packages. The configure scripts will print errors if some dependency is missing.
+You are going to need the following packages:
 
 ```bash
-sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libelf-dev:i386 libzstd-dev libzstd-dev:i386 zstd python3-setuptools libpciaccess-dev libpciaccess-dev:i386 ninja-build libcairo2-dev libcairo2-dev:i386 gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libudev-dev:i386 libglvnd-dev libglvnd-dev:i386 libxml2-dev libxml2-dev:i386 graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libxcb-glx0-dev:i386 libx11-xcb-dev libx11-xcb-dev:i386 libxcb-dri2-0-dev libxcb-dri2-0-dev:i386 libxcb-dri3-dev libxcb-dri3-dev:i386 libxcb-present-dev libxcb-present-dev:i386 libxshmfence-dev libxshmfence-dev:i386 libxfixes-dev:i386 libxxf86vm-dev:i386 libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml
+sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libelf-dev:i386 libzstd-dev libzstd-dev:i386 zstd python3-setuptools libpciaccess-dev libpciaccess-dev:i386 ninja-build libcairo2-dev libcairo2-dev:i386 gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libudev-dev:i386 libglvnd-dev libglvnd-dev:i386 libxml2-dev libxml2-dev:i386 graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libxcb-glx0-dev:i386 libx11-xcb-dev libx11-xcb-dev:i386 libxcb-dri2-0-dev libxcb-dri2-0-dev:i386 libxcb-dri3-dev libxcb-dri3-dev:i386 libxcb-present-dev libxcb-present-dev:i386 libxshmfence-dev libxshmfence-dev:i386 libxfixes-dev:i386 libxxf86vm-dev:i386 libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev
 ```
 
 Put `/usr/lib/ccache:` at the beginning of PATH in `/etc/environment`.
@@ -132,7 +132,7 @@ sudo marek-build/make-install_glx-utils-32.sh
 
 # xf86-video-amdgpu (usually not needed)
 cd xf86-video-amdgpu
-./autogen --prefix=/usr
+./autogen.sh --prefix=/usr
 make -j`nproc`
 sudo make install
 ```
