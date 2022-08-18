@@ -1,21 +1,33 @@
 Marek's approach to building AMD GPU drivers for driver development
 ===================================================================
 
+These instructions have only been tested on Ubuntu.
+
 You are going to need meson, autoconf, automake, libtool, cmake, ninja, gcc, g++, gcc-multilib, g++-multilib, spirv-tools and many lib development packages. The configure scripts will print errors if some dependency is missing.
 
-These instructions have only been tested on Ubuntu.
+```bash
+sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libelf-dev:i386 libzstd-dev libzstd-dev:i386 zstd python3-setuptools libpciaccess-dev libpciaccess-dev:i386 ninja-build libcairo2-dev libcairo2-dev:i386 gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libudev-dev:i386 libglvnd-dev libglvnd-dev:i386 libxml2-dev libxml2-dev:i386 graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libxcb-glx0-dev:i386 libx11-xcb-dev libx11-xcb-dev:i386 libxcb-dri2-0-dev libxcb-dri2-0-dev:i386 libxcb-dri3-dev libxcb-dri3-dev:i386 libxcb-present-dev libxcb-present-dev:i386 libxshmfence-dev libxshmfence-dev:i386 libxfixes-dev:i386 libxxf86vm-dev:i386 libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml
+```
+
+Put `/usr/lib/ccache:` at the beginning of PATH in `/etc/environment`.
 
 Cloning repos
 -------------
 
-Clone with ssh for the repositories where you can push.
+Clone with ssh for the repositories where you can push. The below commands only give you read-only access.
 
 ```bash
-git clone https://github.com/marekolsak/marek-build.git
 
-# These driver components are usually not necessary:
+# These driver components are usually not necessary. Most people can skip them.
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git # Ideally use the AMD internal repository instead
 git clone https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu.git
+
+# Dependencies
+git clone https://github.com/marekolsak/marek-build.git
+git clone https://github.com/mesonbuild/meson.git build-meson
+git clone https://github.com/intel/libva.git
+git clone https://gitlab.freedesktop.org/wayland/wayland.git
+git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.git
 
 # For the driver:
 # Sometimes you can use the kernel and LLVM that come with your distribution
@@ -23,6 +35,7 @@ git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next
 git clone https://gitlab.freedesktop.org/mesa/drm.git
 git clone https://github.com/llvm/llvm-project.git
 git clone https://gitlab.freedesktop.org/mesa/mesa.git
+git clone https://gitlab.freedesktop.org/mesa/demos.git # just for glxinfo and glxgears
 
 # For test suites:
 git clone https://gitlab.freedesktop.org/mesa/waffle.git
@@ -49,13 +62,40 @@ git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b opengl-cts-4.6.
 Building the driver
 -------------------
 
-Getting the firmware is not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
-
-This also includes instructions for building the 32-bit driver, which is only required by Steam and can be skipped if Steam is not needed.
+Notes:
+- Getting the firmware is not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
+- This also includes instructions for building the 32-bit driver, which is only required by Steam and can be skipped if Steam is not needed.
+- These instructions assume that you also build LLVM. Some of the Mesa configuration parameters are different if distro-provided LLVM packages are used instead.
+- If you get Mesa build failures due to LLVM, go back to llvm-project, check out the latest release/* branch in git, and repeat all step for LLVM. Then repeat all steps for Mesa.
 
 ```bash
+ccache --max-size=50G
+
+# Meson
+cd build-meson
+sudo python3 setup.py install
+
+# VAAPI
+cd libva
+meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
+ninja -Cbuild
+sudo ninja -Cbuild install
+
+# Wayland (for wayland-protocols)
+cd wayland
+meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
+ninja -Cbuild
+sudo ninja -Cbuild install
+
+# wayland-protocols 
+cd wayland-protocols
+meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
+ninja -Cbuild
+sudo ninja -Cbuild install
+
 # Kernel
 cd linux
+sudo apt install linux-source; cp -r /usr/src/linux-source-*/debian . # to fix a compile failure on Ubuntu
 ../marek-build/build_kernel.sh
 
 # libdrm
@@ -68,8 +108,8 @@ sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 
 # LLVM
-sudo cp ../marek-build/etc/ld.so.conf.d/marek_llvm.conf /etc/ld.so.conf.d/
 cd llvm-project
+sudo cp ../marek-build/etc/ld.so.conf.d/marek_llvm.conf /etc/ld.so.conf.d/
 ../marek-build/conf_llvm.sh
 ninja -Cbuild
 ninja -Cbuild32
@@ -77,7 +117,7 @@ sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 sudo ldconfig
 
-# Mesa (conf_mesa.sh assumes that you don't use the LLVM that comes with your distribution)
+# Mesa
 cd mesa
 ../marek-build/conf_mesa.sh
 ../marek-build/conf_mesa.sh 32
@@ -85,8 +125,12 @@ ninja -Cbuild
 ninja -Cbuild32
 sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
+sudo ldconfig
 
-# xf86-video-amdgpu
+# Install the latest 64-bit and 32-bit glxgears and glxinfo (this uses the demos repository)
+sudo marek-build/make-install_glx-utils-32.sh
+
+# xf86-video-amdgpu (usually not needed)
 cd xf86-video-amdgpu
 ./autogen --prefix=/usr
 make -j`nproc`
@@ -105,8 +149,8 @@ For GLCTS, you need a Khronos account and you need to upload your ssh public key
 # Waffle
 cd waffle
 ../marek-build/conf_waffle.sh
-ninja
-sudo ninja install
+ninja -Cbuild
+sudo ninja -Cbuild install
 
 # piglit
 cd piglit
@@ -138,8 +182,8 @@ PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
 Xorg startup crashes can be debugged via gdb over ssh like this: `sudo gdb /usr/lib/xorg/Xorg`
 
 
-Mesa development without `ninja install`
----------------------------------------
+Mesa development and testing without subsequent installation
+------------------------------------------------------------
 
 After you run `ninja install` for Mesa, you don't have to install it every time you rebuild it if you add symlinks from `/usr/lib` into your build directory. Then, you just build Mesa and the next started app will use it. There is a script that creates the symlinks:
 
