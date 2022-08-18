@@ -137,7 +137,7 @@ make -j`nproc`
 sudo make install
 ```
 
-The above instructions overwrite distribution libraries and header files. If your Linux distribution updates them, you'll have to reinstall them from source, only libdrm and Mesa.
+The above instructions overwrite distribution libraries and header files. If your Linux distribution updates them, you'll have to reinstall them from source.
 
 
 Building OpenGL test suites
