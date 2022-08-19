@@ -1,7 +1,7 @@
 Marek's approach to building AMD GPU drivers for driver development
 ===================================================================
 
-These instructions have only been tested on Ubuntu.
+These instructions have only been tested on Ubuntu 20.04.
 
 You are going to need the following packages:
 
@@ -11,14 +11,24 @@ sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev li
 
 Put `/usr/lib/ccache:` at the beginning of PATH in `/etc/environment`.
 
+```bash
+ccache --max-size=50G
+```
+
 Cloning repos
 -------------
+
+**These can be skipped depending on your circumstances:**
+- linux-firmware: Not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
+- meson, libva, wayland-protocols (and the wayland dependency) are not needed if Mesa doesn't fail to configure. Ubuntu 20.04 needs them all. Ubuntu 22.04 might not.
+- libdrm can be skipped if Mesa doen't fail to configure, but that's rare.
+- xf86-video-amdgpu is almost always not needed unless somebody explicitly told you that you need it.
+- The 32-bit driver is not needed if Steam isn't going to be used because only Steam and some Steam games require it.
 
 Clone with ssh for the repositories where you can push. The below commands only give you read-only access.
 
 ```bash
 
-# These driver components are usually not necessary. Most people can skip them.
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git # Ideally use the AMD internal repository instead
 git clone https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu.git
 
@@ -30,7 +40,6 @@ git clone https://gitlab.freedesktop.org/wayland/wayland.git
 git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.git
 
 # For the driver:
-# Sometimes you can use the kernel and LLVM that come with your distribution
 git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next # Ideally use the AMD internal repository instead
 git clone https://gitlab.freedesktop.org/mesa/drm.git
 git clone https://github.com/llvm/llvm-project.git
@@ -44,8 +53,9 @@ git clone https://android.googlesource.com/platform/external/deqp/
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b opengl-cts-4.6.2
 ```
 
+
 **Build order for the driver:**
-- firmware
+- firmware (just copy the firmware files to /lib/firmware/amdgpu/)
 - kernel (depends on firmware)
 - libdrm
 - llvm
@@ -63,19 +73,15 @@ Building the driver
 -------------------
 
 Notes:
-- Getting the firmware is not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
-- This also includes instructions for building the 32-bit driver, which is only required by Steam and can be skipped if Steam is not needed.
-- These instructions assume that you also build LLVM. Some of the Mesa configuration parameters are different if distro-provided LLVM packages are used instead.
 - If you get Mesa build failures due to LLVM, go back to llvm-project, check out the latest release/* branch in git, and repeat all step for LLVM. Then repeat all steps for Mesa.
 
 ```bash
-ccache --max-size=50G
 
 # Meson
 cd build-meson
 sudo python3 setup.py install
 
-# VAAPI
+# libva
 cd libva
 meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
 ninja -Cbuild
