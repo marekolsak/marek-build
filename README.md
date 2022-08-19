@@ -18,7 +18,7 @@ ccache --max-size=50G
 Cloning repos
 -------------
 
-**These can be skipped depending on your circumstances:**
+These can be skipped depending on your circumstances:
 - linux-firmware: Not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
 - meson, libva, wayland-protocols (and the wayland dependency) are not needed if Mesa doesn't fail to configure. Ubuntu 20.04 needs them all. Ubuntu 22.04 might not.
 - libdrm can be skipped if Mesa doen't fail to configure, but that's rare.
@@ -200,28 +200,28 @@ marek-build/make-mesa-symlinks.sh
 If your Linux distribution updates packages and overwrites your symlinks, just re-run the script.
 
 
-Piglit regression testing
--------------------------
+Test suites and regression testing
+----------------------------------
 
-Install Rust's package manager Cargo: https://www.rust-lang.org/tools/install
+Initial setup:
+- mesa, piglit, deqp, and glcts directories must be next to each other.
+- Add `PATH=$HOME/?/mesa/src/gallium/drivers/radeonsi/ci:$PATH` into `.bashrc`. Replace `?` with the proper path.
+- Install Rust, which will include its package manager Cargo: https://www.rust-lang.org/tools/install
+  - The installer will add the Cargo environment into `.bashrc`, which will add cargo into `PATH`.
+- Restart bash to get the new `PATH`.
+- Run: `cargo install deqp-runner`
 
-Then install `deqp-runner`:
-```
-cargo install deqp-runner
-```
-(adding `$HOME/.cargo/bin` to `PATH` will make it easier to run `deqp-runner`)
+Typing `radeonsi-run-tests.py` will run all test suites. That's all you need. It will store the results in the `test-results` directory next to the cloned repositories and print regression information into the terminal.
 
-
-Then you can use the `radeonsi-run-tests.py` script to run all the tests suites.
-The script is located in `mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py` (again, adding this path to `$PATH` avoids typing the whole path each time).
-
-`radeonsi-run-tests.py` needs to know where it can find piglit, glcts and deqp. If you followed the above installation steps, you can either:
-- run it like this: `./mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py --parent-path $PWD`
-- or define `MAREKO_BUILD_PATH=$PWD` and then run it directly: `./mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py` (or `radeonsi-run-tests.py` if your `$PATH` variable contains `mesa/src/gallium/drivers/radeonsi/ci`)
-
-The alternative is to pass the path of each test suite (see `--piglit-path`, `--glcts-path` and `--deqp-path` options).
-
-By default the script will write the results in `/tmp`, eg: `/tmp/2022-01-07-16-59-39`.
+> *This text is may be removed:*
+>
+> `radeonsi-run-tests.py` needs to know where it can find piglit, glcts and deqp. If you followed the above installation steps, you can either:
+> - run it like this: `./mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py --parent-path $PWD`
+> - or define `MAREKO_BUILD_PATH=$PWD` and then run it directly: `./mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py` (or `radeonsi-run-tests.py` if your `$PATH` variable contains `mesa/src/gallium/drivers/radeonsi/ci`)
+> 
+> The alternative is to pass the path of each test suite (see `--piglit-path`, `--glcts-path` and `--deqp-path` options).
+> 
+> By default the script will write the results in `/tmp`, eg: `/tmp/2022-01-07-16-59-39`.
 
 If your machine has multiple GPUs, you can select the one to test with `--gpu N`.
 
