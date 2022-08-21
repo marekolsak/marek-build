@@ -7,7 +7,11 @@ import subprocess
 ninja = subprocess.Popen(['ninja'] + sys.argv[1:], stdout=subprocess.PIPE, universal_newlines=True)
 
 for line in ninja.stdout:
-    error = line.find('error:') >= 0 or line.find('warning:') >= 0
+    error = (line.find('error:') >= 0 or
+             line.find('warning:') >= 0 or
+             line.find('Error:') >= 0 or
+             line.find('undefined reference') >= 0 or
+             line.find('FAILED:') >= 0)
     file = sys.stderr if error else sys.stdout
     print(line.rstrip(), file=file)
     file.flush()
