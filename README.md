@@ -23,9 +23,9 @@ These can be skipped depending on your circumstances:
 - meson, libva, wayland-protocols (and the wayland dependency) are not needed if Mesa doesn't fail to configure. Ubuntu 20.04 needs them all. Ubuntu 22.04 might not.
 - libdrm can be skipped if Mesa doen't fail to configure, but that's rare.
 - xf86-video-amdgpu is almost always not needed unless somebody explicitly told you that you need it.
-- The 32-bit driver is not needed if Steam isn't going to be used because only Steam and some Steam games require it.
+- The 32-bit driver is not needed if Steam isn't going to be used because only Steam and some Steam games use it.
 
-Clone with ssh for the repositories where you can push. The below commands only give you read-only access.
+Clone with ssh for the repositories where you will want to push. The below commands only give you read-only access.
 
 ```bash
 
@@ -93,7 +93,7 @@ meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
 ninja -Cbuild
 sudo ninja -Cbuild install
 
-# wayland-protocols 
+# wayland-protocols
 cd wayland-protocols
 meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
 ninja -Cbuild
