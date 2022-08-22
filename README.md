@@ -211,17 +211,7 @@ Initial setup:
 - Restart bash to get the new `PATH`.
 - Run: `cargo install deqp-runner`
 
-Typing `radeonsi-run-tests.py` will run all test suites. That's all you need. It will store the results in the `test-results` directory next to the cloned repositories and print regression information into the terminal.
-
-> *This text is may be removed:*
->
-> `radeonsi-run-tests.py` needs to know where it can find piglit, glcts and deqp. If you followed the above installation steps, you can either:
-> - run it like this: `./mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py --parent-path $PWD`
-> - or define `MAREKO_BUILD_PATH=$PWD` and then run it directly: `./mesa/src/gallium/drivers/radeonsi/ci/radeonsi-run-tests.py` (or `radeonsi-run-tests.py` if your `$PATH` variable contains `mesa/src/gallium/drivers/radeonsi/ci`)
-> 
-> The alternative is to pass the path of each test suite (see `--piglit-path`, `--glcts-path` and `--deqp-path` options).
-> 
-> By default the script will write the results in `/tmp`, eg: `/tmp/2022-01-07-16-59-39`.
+Then just type `radeonsi-run-tests.py` to run all test suites. It will store the results in the `test-results` directory next to the cloned repositories and print regression information into the terminal.
 
 If your machine has multiple GPUs, you can select the one to test with `--gpu N`.
 
