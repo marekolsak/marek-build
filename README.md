@@ -42,6 +42,7 @@ git clone https://github.com/mesonbuild/meson.git build-meson
 git clone https://github.com/intel/libva.git
 git clone https://gitlab.freedesktop.org/wayland/wayland.git
 git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.git
+git clone https://gitlab.freedesktop.org/glvnd/libglvnd.git
 ```
 
 ### Essential sources to install
@@ -127,6 +128,12 @@ ninja -Cbuild32
 sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 sudo ldconfig
+
+# libglvnd (optional)
+cd libglvnd
+../marek-build/conf_glvnd.sh
+ninja -Cbuild
+sudo ninja -Cbuild install
 
 # Mesa (essential)
 cd mesa
