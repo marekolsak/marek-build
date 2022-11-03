@@ -1,12 +1,12 @@
 Marek's approach to building AMD GPU drivers for driver development
 ===================================================================
 
-These instructions have only been tested on Ubuntu 20.04.
+These instructions have been tested on Ubuntu 22.04.
 
 You are going to need the following packages:
 
 ```bash
-sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libelf-dev:i386 libzstd-dev libzstd-dev:i386 zstd python3-setuptools libpciaccess-dev libpciaccess-dev:i386 ninja-build libcairo2-dev libcairo2-dev:i386 gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libudev-dev:i386 libglvnd-dev libglvnd-dev:i386 libxml2-dev libxml2-dev:i386 graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libxcb-glx0-dev:i386 libx11-xcb-dev libx11-xcb-dev:i386 libxcb-dri2-0-dev libxcb-dri2-0-dev:i386 libxcb-dri3-dev libxcb-dri3-dev:i386 libxcb-present-dev libxcb-present-dev:i386 libxshmfence-dev libxshmfence-dev:i386 libxfixes-dev:i386 libxxf86vm-dev:i386 libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev
+sudo apt install git make gcc flex bison libncurses-dev libelf-dev libzstd-dev libzstd-dev:i386 zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev libva-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libudev-dev:i386 libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev wayland-protocols libwayland-egl-backend-dev libxcb-glx0-dev libxcb-glx0-dev:i386 libx11-xcb-dev libx11-xcb-dev:i386 libxcb-dri2-0-dev libxcb-dri2-0-dev:i386 libxcb-dri3-dev libxcb-dri3-dev:i386 libxcb-present-dev libxcb-present-dev:i386 libxshmfence-dev libxshmfence-dev:i386 libxfixes-dev libxfixes-dev:i386 libxxf86vm-dev libxxf86vm-dev:i386 libxrandr-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev vim meson build-essential
 ```
 
 Put `/usr/lib/ccache:` at the beginning of PATH in `/etc/environment`.
@@ -18,33 +18,39 @@ ccache --max-size=50G
 Cloning repos
 -------------
 
-These can be skipped depending on your circumstances:
+### Guidelines:
 - linux-firmware: Not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and re-installing the kernel (which packs the firmware into /boot/initrd*). The kernel only loads firmware from initrd.
-- meson, libva, wayland-protocols (and the wayland dependency) are not needed if Mesa doesn't fail to configure. Ubuntu 20.04 needs them all. Ubuntu 22.04 might not.
-- libdrm can be skipped if Mesa doen't fail to configure, but that's rare.
+- meson, libva, wayland-protocols (and the wayland dependency) are not needed if Mesa doesn't fail to configure. On Ubuntu 22.04, these dependencies should be met if the above mentioned list of packages are installed. Otherwise, build and install them from source.
+- libdrm can be skipped if Mesa doesn't fail to configure, but that's rare.
 - xf86-video-amdgpu is almost always not needed unless somebody explicitly told you that you need it.
 - The 32-bit driver is not needed if Steam isn't going to be used because only Steam and some Steam games use it.
 
+The optional sources can be skipped depending on your circumstances. Use your discretion to pick and choose from the optional sources, if necessary.
 Clone with ssh for the repositories where you will want to push. The below commands only give you read-only access.
 
+### Optional sources to install
+
 ```bash
-
+# Frequently installed dependencies
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git # Ideally use the AMD internal repository instead
+git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next # Ideally use the AMD internal repository instead
 git clone https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu.git
+git clone https://gitlab.freedesktop.org/mesa/demos.git # just for glxinfo and glxgears
 
-# Dependencies
-git clone https://github.com/marekolsak/marek-build.git
+# Other dependencies
 git clone https://github.com/mesonbuild/meson.git build-meson
 git clone https://github.com/intel/libva.git
 git clone https://gitlab.freedesktop.org/wayland/wayland.git
 git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.git
+```
 
+### Essential sources to install
+
+```bash
 # For the driver:
-git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next # Ideally use the AMD internal repository instead
 git clone https://gitlab.freedesktop.org/mesa/drm.git
 git clone https://github.com/llvm/llvm-project.git
 git clone https://gitlab.freedesktop.org/mesa/mesa.git
-git clone https://gitlab.freedesktop.org/mesa/demos.git # just for glxinfo and glxgears
 
 # For test suites:
 git clone https://gitlab.freedesktop.org/mesa/waffle.git
@@ -52,7 +58,6 @@ git clone https://gitlab.freedesktop.org/mesa/piglit.git
 git clone https://android.googlesource.com/platform/external/deqp/
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b opengl-cts-4.6.2
 ```
-
 
 **Build order for the driver:**
 - firmware (just copy the firmware files to /lib/firmware/amdgpu/)
@@ -74,37 +79,37 @@ Building the driver
 
 Notes:
 - If you get Mesa build failures due to LLVM, go back to llvm-project, check out the latest release/* branch in git, and repeat all step for LLVM. Then repeat all steps for Mesa.
+- The instructions below are in the recommended build order. 
 
 ```bash
-
-# Meson
+# Meson (optional)
 cd build-meson
 sudo python3 setup.py install
 
-# libva
+# libva (optional)
 cd libva
 meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
 ninja -Cbuild
 sudo ninja -Cbuild install
 
-# Wayland (for wayland-protocols)
+# Wayland (for wayland-protocols) (optional)
 cd wayland
 meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
 ninja -Cbuild
 sudo ninja -Cbuild install
 
-# wayland-protocols
+# wayland-protocols (optional)
 cd wayland-protocols
 meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
 ninja -Cbuild
 sudo ninja -Cbuild install
 
-# Kernel
+# Kernel (optional)
 cd linux
 sudo apt install linux-source; cp -r /usr/src/linux-source-*/debian . # to fix a compile failure on Ubuntu
 ../marek-build/build_kernel.sh
 
-# libdrm
+# libdrm (essential)
 cd drm
 ../marek-build/conf_drm.sh
 ../marek-build/conf_drm.sh 32
@@ -113,7 +118,7 @@ ninja -Cbuild32
 sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 
-# LLVM
+# LLVM (essential)
 cd llvm-project
 sudo cp ../marek-build/etc/ld.so.conf.d/marek_llvm.conf /etc/ld.so.conf.d/
 ../marek-build/conf_llvm.sh
@@ -123,7 +128,7 @@ sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 sudo ldconfig
 
-# Mesa
+# Mesa (essential)
 cd mesa
 ../marek-build/conf_mesa.sh
 ../marek-build/conf_mesa.sh 32
@@ -133,10 +138,10 @@ sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 sudo ldconfig
 
-# Install the latest 64-bit and 32-bit glxgears and glxinfo (this uses the demos repository)
+# Install the latest 64-bit and 32-bit glxgears and glxinfo (this uses the demos repository) (optional)
 sudo marek-build/make-install_glx-utils-32.sh
 
-# xf86-video-amdgpu (usually not needed)
+# xf86-video-amdgpu (usually not needed - optional)
 cd xf86-video-amdgpu
 ./autogen.sh --prefix=/usr
 make -j`nproc`
@@ -152,28 +157,27 @@ Building OpenGL test suites
 For GLCTS, you need a Khronos account and you need to upload your ssh public key into your Khronos Gitlab account. Then the conf_glcts.sh script will fetch additional Khronos source code that you need for building the desktop OpenGL Conformance Test Suite.
 
 ```bash
-# Waffle
+# Waffle (essential)
 cd waffle
 ../marek-build/conf_waffle.sh
 ninja -Cbuild
 sudo ninja -Cbuild install
 
-# piglit
+# piglit (essential)
 cd piglit
 ../marek-build/conf_piglit.sh
 ninja
 
-# deqp
+# deqp (essential)
 cd deqp
 ../marek-build/conf_deqp.sh
 ninja
 
-# glcts
+# glcts (essential)
 cd glcts
 ../marek-build/conf_glcts.sh
 ninja
 ```
-
 
 First test
 ----------
