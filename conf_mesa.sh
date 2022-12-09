@@ -39,8 +39,9 @@ else
     videocodecs=h264dec,h264enc,h265dec,h265enc
 fi
 
-
 rm -r build$1
+
+set -e
 
 meson build$1 --prefix $prefix --libdir $prefix/lib/$arch --buildtype $buildtype -Dlibunwind=disabled -Dglvnd=true \
 	--native-file `dirname $0`/llvm_config_$arch.cfg \

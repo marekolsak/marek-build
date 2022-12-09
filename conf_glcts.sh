@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 error() {
     echo
     echo You need to be a Khronos member and add your ssh public key into your Khronos Gitlab account.

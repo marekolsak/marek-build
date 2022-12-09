@@ -14,6 +14,8 @@ fi
 
 rm -r build$1
 
+set -e
+
 cflags="-fno-omit-frame-pointer"
 
 meson build$1 --prefix $prefix --libdir $prefix/lib/$archdir --buildtype debugoptimized \

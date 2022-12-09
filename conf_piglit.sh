@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 cmake . -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	-DPIGLIT_BUILD_DMA_BUF_TESTS=ON \
 	-DPIGLIT_BUILD_GLES1_TESTS=ON \
