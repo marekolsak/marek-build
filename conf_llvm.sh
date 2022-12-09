@@ -5,6 +5,9 @@ prefix=${PREFIX:-/usr/local}
 if test x$1 = x32; then
     # 32-bit build
     rm -rf build32
+
+    set -e
+
     mkdir build32
     cd build32
     cmake ../llvm -G Ninja \
@@ -17,12 +20,13 @@ if test x$1 = x32; then
         -DZLIB_LIBRARY_RELEASE="/usr/lib/i386-linux-gnu/libz.so" \
         -Dzstd_LIBRARY="/usr/lib/i386-linux-gnu/libzstd.so"
 
-    cd ..
-
     echo -e "[binaries]\nllvm-config = '$prefix/llvm-i386/bin/llvm-config'\n" > `dirname $0`/llvm_config_i386-linux-gnu.cfg
 else
     # 64-bit build
     rm -rf build
+
+    set -e
+
     mkdir build
     cd build
 
@@ -33,8 +37,8 @@ else
         -DCMAKE_C_FLAGS_RELEASE="-O2 -g1 -fno-omit-frame-pointer" \
         -DCMAKE_CXX_FLAGS_RELEASE="-O2 -g1 -fno-omit-frame-pointer"
 
-    cd ..
 
     echo -e "[binaries]\nllvm-config = '$prefix/llvm/bin/llvm-config'\n" > `dirname $0`/llvm_config_x86_64-linux-gnu.cfg
 fi
 
+cd ..

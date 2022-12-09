@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 prefix=${PREFIX:-/usr}
 buildtype=${BUILD_TYPE:-debugoptimized}
 
