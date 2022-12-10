@@ -25,7 +25,8 @@ cmake ../llvm -G Ninja \
     -DCMAKE_C_FLAGS_RELEASE="-O2 -g1 -fno-omit-frame-pointer" \
     -DCMAKE_CXX_FLAGS_RELEASE="-O2 -g1 -fno-omit-frame-pointer" \
     -DTerminfo_LIBRARIES="/usr/lib/i386-linux-gnu/libtinfo.so" \
-    -DZLIB_LIBRARY_RELEASE="/usr/lib/i386-linux-gnu/libz.so"
+    -DZLIB_LIBRARY_RELEASE="/usr/lib/i386-linux-gnu/libz.so" \
+    -Dzstd_LIBRARY="/usr/lib/i386-linux-gnu/libzstd.so"
 
 cd ..
 
