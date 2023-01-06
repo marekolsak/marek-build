@@ -18,7 +18,7 @@ set -e
 
 cflags="-fno-omit-frame-pointer"
 
-meson build$1 --prefix $prefix --libdir $prefix/lib/$archdir --buildtype debugoptimized \
+meson build$1 --prefix $prefix --buildtype debugoptimized \
 	-Dc_args=$cflags -Dc_link_args=$cflags -Dpkg_config_path=$prefix/lib/$archdir/pkgconfig \
 	-Detnaviv=disabled -Dexynos=disabled -Dfreedreno=disabled -Domap=disabled -Dtegra=disabled -Dvc4=disabled \
 	-Dcairo-tests=disabled
