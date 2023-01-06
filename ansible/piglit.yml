@@ -1,0 +1,11 @@
+---
+- name: Configure piglit
+  args:
+    chdir: "{{ sources }}/piglit"
+  shell:
+    "{{ playbook_dir }}/../conf_piglit.sh"
+- name: Build piglit
+  args:
+    chdir: "{{ sources }}/piglit"
+  shell:
+    ninja

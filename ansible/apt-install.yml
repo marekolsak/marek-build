@@ -1,0 +1,50 @@
+---
+- name: "Install basic build tools (apt)"
+  become: true
+  apt:
+    pkg:
+    - build-essential
+    - git
+    - ninja-build
+    - cmake
+    - pkg-config
+    - python3-pip
+    - libffi-dev
+    - libxml2-dev
+    - libelf-dev
+    - libglvnd-dev
+    - bison
+    - flex
+    - glslang-tools
+    - libexpat1-dev
+    - libvdpau-dev
+    - libvulkan-dev
+    - libx11-dev
+    - libx11-xcb-dev
+    - libxcb-dri2-0-dev
+    - libxcb-dri3-dev
+    - libxcb-glx0-dev
+    - libxcb-present-dev
+    - libxcb-randr0-dev
+    - libxcb-shm0-dev
+    - libxcb-sync-dev
+    - libxcb-xfixes0-dev
+    - libxext-dev
+    - libxfixes-dev
+    - libxrandr-dev
+    - libxshmfence-dev
+    - libxxf86vm-dev
+    - x11proto-dev
+    - mesa-utils
+    - vulkan-tools
+    - ccache
+    state: present
+- name: "Install piglit dependencies"
+  when: build_piglit | bool
+  become: true
+  apt:
+    pkg:
+    - libpng-dev
+    - python3-numpy
+    - libxkbcommon-dev
+    state: present

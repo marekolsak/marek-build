@@ -1,0 +1,25 @@
+---
+- name: Check if wayland build dir exists
+  stat:
+    path: "{{ sources }}/wayland/build"
+  register: wayland_build
+- name: wayland
+  when: git_wayland.changed or "wayland" in rebuild or not wayland_build.stat.exists
+  block:
+    - name: Configure wayland
+      args:
+        chdir: "{{ sources }}/wayland"
+      shell:
+        meson build -Dprefix="{{ ansible_env.PREFIX }}" -Ddocumentation=false
+    - name: Build+Install wayland
+      args:
+        chdir: "{{ sources }}/wayland"
+      shell:
+         ninja -C build install
+  rescue:
+    - name: Cleanup on errors
+      ansible.builtin.file:
+        path: "{{ sources }}/wayland/build"
+        state: absent
+    - name: Fail
+      ansible.builtin.command: /bin/false

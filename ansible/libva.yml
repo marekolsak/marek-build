@@ -1,0 +1,25 @@
+---
+- name: Check if libva build dir exists
+  stat:
+    path: "{{ sources }}/libva/buildva"
+  register: libva_build
+- name: libva
+  when: git_libva.changed or "libva" in rebuild or not libva_build.stat.exists
+  block:
+    - name: Configure libva
+      args:
+        chdir: "{{ sources }}/libva"
+      shell:
+        meson buildva -Dprefix="{{ ansible_env.PREFIX }}"
+    - name: Build+Install libva
+      args:
+        chdir: "{{ sources }}/libva"
+      shell:
+         ninja -C buildva install
+  rescue:
+    - name: Cleanup on errors
+      ansible.builtin.file:
+        path: "{{ sources }}/libva/buildva"
+        state: absent
+    - name: Fail
+      ansible.builtin.command: /bin/false

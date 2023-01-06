@@ -1,0 +1,25 @@
+---
+- name: Check if waffle build dir exists
+  stat:
+    path: "{{ sources }}/waffle/build"
+  register: waffle_build
+- name: waffle
+  when: git_waffle.changed or "waffle" in rebuild or not waffle_build.stat.exists
+  block:
+    - name: Configure waffle
+      args:
+        chdir: "{{ sources }}/waffle"
+      shell:
+        "{{ playbook_dir }}/../conf_waffle.sh"
+    - name: Build+Install waffle
+      args:
+        chdir: "{{ sources }}/waffle"
+      shell:
+         ninja -C build install
+  rescue:
+    - name: Cleanup on errors
+      ansible.builtin.file:
+        path: "{{ sources }}/waffle/build"
+        state: absent
+    - name: Fail
+      ansible.builtin.command: /bin/false

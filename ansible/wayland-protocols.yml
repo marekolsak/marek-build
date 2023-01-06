@@ -1,0 +1,25 @@
+---
+- name: Check if wayland-protocols build dir exists
+  stat:
+    path: "{{ sources }}/wayland-protocols/build"
+  register: wayland_protocols_build
+- name: wayland-protocols
+  when: git_wayland_protocols.changed or "wayland-protocols" in rebuild or not wayland_protocols_build.stat.exists
+  block:
+    - name: Configure wayland-protocols
+      args:
+        chdir: "{{ sources }}/wayland-protocols"
+      shell:
+        meson build -Dprefix="{{ ansible_env.PREFIX }}"
+    - name: Build+Install wayland-protocols
+      args:
+        chdir: "{{ sources }}/wayland-protocols"
+      shell:
+         ninja -C build install
+  rescue:
+    - name: Cleanup on errors
+      ansible.builtin.file:
+        path: "{{ sources }}/wayland-protocols/build"
+        state: absent
+    - name: Fail
+      ansible.builtin.command: /bin/false

@@ -1,0 +1,88 @@
+---
+- name: "Install basic build tools (dnf)"
+  become: true
+  dnf:
+    pkg:
+    - gcc
+    - gcc-c++
+    - make
+    - git-all
+    - cmake
+    - pkgconf-pkg-config
+    - libffi-devel
+    - libxml2-devel
+    - elfutils-devel
+    - libglvnd-devel
+    - bison
+    - flex
+    - expat-devel
+    - libvdpau
+    - vulkan-headers
+    - libX11-devel
+- name: "Install basic build tools (Fedora)"
+  become: true
+  dnf:
+    pkg:
+    - libXext-devel
+    - libXfixes-devel
+    - libxshmfence-devel
+    - libXxf86vm-devel
+    - libxcb-devel
+    - libXrandr-devel
+    state: present
+  when: ansible_facts['distribution']|lower == 'fedora'
+- name: "Ninja"
+  block:
+    - name: "Install ninja with dnf"
+      become: true
+      dnf:
+        pkg: ninja
+  rescue:
+    - name: "Check if ninja is installed"
+      stat:
+        path: "{{ ansible_env.HOME }}/.local/bin/ninja"
+      register: ninja_check
+    - name: "Clone ninja"
+      git:
+        repo: https://github.com/ninja-build/ninja.git
+        dest: "{{ ansible_env.HOME }}/code/ninja"
+        clone: yes
+        update: no
+        version: v1.11.1
+        single_branch: true
+      register: git_ninja
+    - name: "Build ninja"
+      args:
+        chdir: "{{ ansible_env.HOME }}/code/ninja"
+      shell: |
+        python3 configure.py --bootstrap
+        cp ninja "{{ ansible_env.HOME }}/.local/bin"
+      when: not ninja_check.stat.exists
+- name: "ccache"
+  block:
+    - name: "Install ccache with dnf"
+      become: true
+      dnf:
+        pkg: ccache
+  rescue:
+    - name: "Check if ccache is installed"
+      stat:
+        path: "{{ ansible_env.HOME }}/.local/bin/ccache"
+      register: ccache_check
+    - name: "Clone ccache"
+      git:
+        repo: https://github.com/ccache/ccache.git
+        dest: "{{ ansible_env.HOME }}/code/ccache"
+        clone: yes
+        update: no
+        version: v4.7.4
+        single_branch: true
+      register: git_ccache
+    - name: "Build ccache"
+      args:
+        chdir: "{{ ansible_env.HOME }}/code/ccache"
+      shell: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="{{ ansible_env.HOME }}/.local" .
+        cd build
+        make -j {{ jobs }} install
+      when: not ccache_check.stat.exists

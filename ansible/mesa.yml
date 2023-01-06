@@ -1,0 +1,25 @@
+---
+- name: Check if Mesa build dir exists
+  stat:
+    path: "{{ sources }}/mesa/build"
+  register: mesa_build
+- name: Mesa
+  when: git_mesa.changed or "mesa" in rebuild or not mesa_build.stat.exists
+  block:
+    - name: Configure mesa
+      args:
+        chdir: "{{ sources }}/mesa"
+      shell:
+        "{{ playbook_dir }}/../conf_mesa.sh"
+    - name: Build+Install mesa
+      args:
+        chdir: "{{ sources }}/mesa"
+      shell:
+         "ninja -C build install -j {{ jobs }}"
+  rescue:
+    - name: Cleanup on errors
+      ansible.builtin.file:
+        path: "{{ sources }}/mesa/build"
+        state: absent
+    - name: Fail
+      ansible.builtin.command: /bin/false
