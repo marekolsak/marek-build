@@ -1,5 +1,7 @@
 #!/bin/bash
 
+prefix=${PREFIX:-/usr}
+
 if test x$1 = x32; then
     is64bit=disabled
     archdir=i386-linux-gnu
@@ -12,9 +14,11 @@ fi
 
 rm -r build$1
 
+set -e
+
 cflags="-fno-omit-frame-pointer"
 
-meson build$1 --prefix /usr --libdir /usr/lib/$archdir --buildtype debugoptimized \
-	-Dc_args=$cflags -Dc_link_args=$cflags -Dpkg_config_path=/usr/lib/$archdir/pkgconfig \
-	-Detnaviv=enabled -Dexynos=enabled -Dfreedreno=enabled -Domap=enabled -Dtegra=enabled -Dvc4=enabled \
-	-Dcairo-tests=$is64bit
+meson build$1 --prefix $prefix --buildtype debugoptimized \
+	-Dc_args=$cflags -Dc_link_args=$cflags -Dpkg_config_path=$prefix/lib/$archdir/pkgconfig \
+	-Detnaviv=disabled -Dexynos=disabled -Dfreedreno=disabled -Domap=disabled -Dtegra=disabled -Dvc4=disabled \
+	-Dcairo-tests=disabled
