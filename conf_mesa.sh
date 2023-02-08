@@ -45,5 +45,5 @@ set -e
 
 meson build$1 --prefix $prefix --buildtype $buildtype -Dlibunwind=disabled -Dglvnd=true \
 	--native-file `dirname $0`/llvm_config_$arch.cfg \
-	-Dgallium-drivers=$gallium_drivers -Ddri-drivers=$dri_drivers -Dvulkan-drivers=$vulkandrv \
+	-Dgallium-drivers=$gallium_drivers -Dvulkan-drivers=$vulkandrv \
 	-Dc_args="$profile" -Dcpp_args="$profile" $repl $others -Dgallium-va=$va -Dvideo-codecs=$videocodecs

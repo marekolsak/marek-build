@@ -3,12 +3,12 @@
 prefix=${PREFIX:-/usr}
 
 if test x$1 = x32; then
-    is64bit=disabled
+    is64bit=false
     archdir=i386-linux-gnu
     export CC="gcc -m32"
     export PKG_CONFIG_PATH=/usr/lib/$archdir/pkgconfig
 else
-    is64bit=enabled
+    is64bit=true
     archdir=x86_64-linux-gnu
 fi
 
