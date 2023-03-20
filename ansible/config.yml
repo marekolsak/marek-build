@@ -1,0 +1,26 @@
+---
+# Configuration options. Can be changed here, or on the command line
+# using the "-e key=value" syntax (eg: -e prefix=/usr/local)
+# Prefix for installing the built libraries
+prefix: "/opt/mesa"
+# Build options
+jobs: "{{ ansible_facts['processor_vcpus'] }}"
+# Comma separated list of modules to force rebuild.
+rebuild: ""
+
+# git clones configuration
+sources: "{{ playbook_dir }}/sources"
+
+mesa_repo: https://gitlab.freedesktop.org/mesa/mesa
+mesa_ref: "main"
+
+llvm_repo: https://github.com/llvm/llvm-project.git
+llvm_ref: "main"
+# If you want to use an existing LLVM then pass the full path
+# to llvm-config in this variable.
+# You can also pass /usr/bin/true when none of the drivers you're
+# building depends on LLVM.
+llvm_config: ""
+
+drm_repo: https://gitlab.freedesktop.org/mesa/drm
+drm_ref: "main"

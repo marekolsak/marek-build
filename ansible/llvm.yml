@@ -1,0 +1,29 @@
+---
+- name: Check if llvm build dir exists
+  stat:
+    path: "{{ sources }}/llvm-project/build"
+  register: llvm_build
+- name: llvm
+  when: git_llvm.changed or "llvm" in rebuild or not llvm_build.stat.exists
+  block:
+    - name: "Configure llvm"
+      args:
+        chdir: "{{ sources }}/llvm-project"
+      shell:
+        "{{ playbook_dir }}/../conf_llvm.sh"
+    - name: Build+Install llvm
+      args:
+        chdir: "{{ sources }}/llvm-project"
+      shell:
+        ninja -C build install -j "{{ [ jobs | int, (ansible_facts['memtotal_mb'] / 1500) | round | int ] | min }}"
+    - name: Create llvm config file
+      shell: |
+        echo "[binaries]
+        llvm-config = '{{ prefix }}/llvm/bin/llvm-config'" > "{{ playbook_dir }}/../llvm_config_x86_64-linux-gnu.cfg"
+  rescue:
+    - name: Cleanup on errors
+      ansible.builtin.file:
+        path: "{{ sources }}/llvm-project/build"
+        state: absent
+    - name: Fail
+      ansible.builtin.command: /bin/false

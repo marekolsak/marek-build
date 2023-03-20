@@ -1,0 +1,108 @@
+---
+- name: "Mesa driver build"
+  vars_files:
+    - "{{ playbook_dir }}/config.yml"
+  vars_prompt:
+    - name: "install_globally"
+      prompt: "Should the built Mesa be made available globally?"
+      private: no
+      default: true
+    - name: "build_piglit"
+      prompt: "Should piglit be built?"
+      private: no
+      default: no
+  hosts: localhost
+  connection: local
+  environment:
+    PKG_CONFIG_PATH: "{{ prefix }}/share/pkgconfig:{{ prefix }}/lib/x86_64-linux-gnu/pkgconfig:{{ prefix }}/lib64/pkgconfig"
+    PATH: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.PATH }}"
+    PREFIX: "{{ prefix }}"
+  tasks:
+  - import_tasks: apt-install.yml
+    when: ansible_facts['os_family']|lower == 'debian' or
+          (ansible_facts['os_family']|lower == 'ubuntu' and ansible_distribution_major_version == '22')
+  - import_tasks: rh-install.yml
+    when: ansible_facts['os_family']|lower == 'redhat'
+  - name: Check llvm-config
+    stat:
+      path: "{{ llvm_config }}"
+    register: llvm_conf_bin
+  - name: Determine if llvm needs to be built
+    ansible.builtin.set_fact:
+      must_build_llvm: "{{ not (llvm_conf_bin.stat.exists and llvm_conf_bin.stat.executable) }}"
+  - import_tasks: git-clones.yml
+  - name: Install meson
+    ansible.builtin.pip:
+      name:
+      - meson
+      - mako
+      extra_args: --user
+  - name: Install numpy
+    ansible.builtin.pip:
+      name:
+      - numpy
+      extra_args: --user
+    when: build_piglit | bool
+  - name: Create destination directory
+    become: true
+    ansible.builtin.file:
+      path: "{{ prefix }}"
+      state: directory
+      recurse: yes
+      owner: "{{ ansible_user_id }}"
+      group: "{{ ansible_user_id }}"
+  - import_tasks: wayland.yml
+  - import_tasks: wayland-protocols.yml
+  - import_tasks: drm.yml
+  - import_tasks: libva.yml
+  - import_tasks: llvm.yml
+    when: must_build_llvm
+  - name: llvm config file
+    when: not must_build_llvm
+    shell: |
+      echo "[binaries]
+      llvm-config = '{{ llvm_conf_bin.stat.path }}'" > "{{ playbook_dir }}/../llvm_config_x86_64-linux-gnu.cfg"
+  - import_tasks: mesa.yml
+  - name: "Find libGLX_mesa.so"
+    ansible.builtin.find:
+      paths: "{{ prefix }}"
+      recurse: yes
+      patterns: "libGLX_mesa.so"
+      file_type: any
+    register: libglxpath
+  - name: "Create 10-mesa.conf"
+    become: true
+    shell: |
+      echo "{{ libglxpath.files[0].path | dirname }}" > /etc/ld.so.conf.d/10-mesa.conf
+  - name: "Find libLLVM.so"
+    ansible.builtin.find:
+      paths: "{{ prefix }}"
+      recurse: yes
+      patterns: "libLLVM.so"
+      file_type: any
+    register: libllvmpath
+  - name: "Create 10-llvm.conf"
+    become: true
+    shell: |
+      echo "{{ libllvmpath.files[0].path | dirname }}" > /etc/ld.so.conf.d/10-llvm.conf
+    when: must_build_llvm
+  - name: ldconfig
+    when: install_globally | bool
+    become: true
+    shell: ldconfig
+  - name: print how to use
+    when: not(install_globally | bool)
+    block:
+      - name: "without llvm"
+        when: not must_build_llvm
+        ansible.builtin.debug:
+          msg: "Use LD_LIBRARY_PATH={{ libglxpath.files[0].path | dirname }}:{{ libglxpath.files[0].path | dirname }}/dri"
+      - name: "with llvm"
+        when: must_build_llvm
+        ansible.builtin.debug:
+          msg: "Use LD_LIBRARY_PATH={{ libglxpath.files[0].path | dirname }}:{{ libglxpath.files[0].path | dirname }}/dri:{{ libllvmpath.files[0].path | dirname }}"
+  - name: Piglit
+    when: build_piglit | bool
+    block:
+      - import_tasks: waffle.yml
+      - import_tasks: piglit.yml

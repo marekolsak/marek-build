@@ -117,6 +117,7 @@ sudo ninja -Cbuild32 install
 cd llvm-project
 sudo cp ../marek-build/etc/ld.so.conf.d/marek_llvm.conf /etc/ld.so.conf.d/
 ../marek-build/conf_llvm.sh
+../marek-build/conf_llvm.sh 32
 ninja -Cbuild
 ninja -Cbuild32
 sudo ninja -Cbuild install

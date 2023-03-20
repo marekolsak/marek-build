@@ -11,7 +11,7 @@ if test x$1 = x32; then
     profile="-g"
 
     gallium_drivers=radeonsi
-    others="-Dplatforms=x11 -Dgallium-vdpau=disabled -Dpkg_config_path=/usr/lib/$arch/pkgconfig" # -Dbuild-tests=true"
+    others="-Dplatforms=x11 -Dgallium-vdpau=disabled -Dpkg_config_path=${prefix}/lib/$arch/pkgconfig" # -Dbuild-tests=true"
 
     export CC="gcc -m32"
     export CXX="g++ -m32"
@@ -30,19 +30,20 @@ else
     # for best debugging (no optimizations)
     #buildtype=debug
 
-    gallium_drivers=radeonsi,swrast # ,r300,r600,crocus,zink,virgl,nouveau,d3d12,svga,etnaviv,freedreno,iris,kmsro,lima,panfrost,tegra,v3d,vc4,asahi,i915
+    gallium_drivers=${GALLIUM_DRIVERS:-radeonsi,swrast} # ,r300,r600,crocus,zink,virgl,nouveau,d3d12,svga,etnaviv,freedreno,iris,kmsro,lima,panfrost,tegra,v3d,vc4,asahi,i915
 
-    #vulkandrv=amd #,swrast
+    vulkandrv=${VULKAN_DRIVERS:-} #,swrast
 
     #others="-Dgallium-xa=true -Dgallium-nine=true -Dgallium-omx=bellagio -Dbuild-tests=true -Dtools=glsl,nir"
     #others="-Dbuild-tests=true -Dtools=glsl,nir"
     videocodecs=h264dec,h264enc,h265dec,h265enc
 fi
 
-
 rm -r build$1
 
-meson build$1 --prefix $prefix --libdir $prefix/lib/$arch --buildtype $buildtype -Dlibunwind=disabled -Dglvnd=true \
+set -e
+
+meson build$1 --prefix $prefix --buildtype $buildtype -Dlibunwind=disabled -Dglvnd=true \
 	--native-file `dirname $0`/llvm_config_$arch.cfg \
-	-Dgallium-drivers=$gallium_drivers -Ddri-drivers=$dri_drivers -Dvulkan-drivers=$vulkandrv \
+	-Dgallium-drivers=$gallium_drivers -Dvulkan-drivers=$vulkandrv \
 	-Dc_args="$profile" -Dcpp_args="$profile" $repl $others -Dgallium-va=$va -Dvideo-codecs=$videocodecs

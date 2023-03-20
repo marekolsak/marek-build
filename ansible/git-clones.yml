@@ -1,0 +1,69 @@
+---
+- name: "clone libdrm"
+  git:
+    repo: "{{ drm_repo }}"
+    dest: "{{ sources }}/drm"
+    clone: yes
+    update: no
+    version: "{{ drm_ref }}"
+  register: git_drm
+- name: "clone wayland"
+  git:
+    repo: https://gitlab.freedesktop.org/wayland/wayland
+    dest: "{{ sources }}/wayland"
+    clone: yes
+    update: no
+    single_branch: true
+  register: git_wayland
+- name: "clone wayland-protocol"
+  git:
+    repo: https://gitlab.freedesktop.org/wayland/wayland-protocols
+    dest: "{{ sources }}/wayland-protocols"
+    clone: yes
+    update: no
+    single_branch: true
+  register: git_wayland_protocols
+- name: "clone mesa"
+  git:
+    repo: "{{ mesa_repo }}"
+    dest: "{{ sources }}/mesa"
+    clone: yes
+    update: no
+    version: "{{ mesa_ref }}"
+  register: git_mesa
+- name: "clone libva"
+  git:
+    repo: https://github.com/intel/libva.git
+    dest: "{{ sources }}/libva"
+    clone: yes
+    update: true
+    single_branch: true
+  register: git_libva
+- name: "clone llvm"
+  git:
+    repo: "{{ llvm_repo }}"
+    dest: "{{ sources }}/llvm-project"
+    clone: yes
+    update: false
+    single_branch: true
+    version: "{{ llvm_ref }}"
+  register: git_llvm
+  when: must_build_llvm
+- name: "clone waffle"
+  git:
+    repo: "https://gitlab.freedesktop.org/mesa/waffle.git"
+    dest: "{{ sources }}/waffle"
+    clone: yes
+    update: false
+    single_branch: true
+  register: git_waffle
+  when: build_piglit | bool
+- name: "clone piglit"
+  git:
+    repo: "https://gitlab.freedesktop.org/mesa/piglit.git"
+    dest: "{{ sources }}/piglit"
+    clone: yes
+    update: false
+    single_branch: true
+  register: git_piglit
+  when: build_piglit | bool
