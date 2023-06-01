@@ -50,7 +50,7 @@ git clone https://gitlab.freedesktop.org/mesa/demos.git # just for glxinfo and g
 git clone https://gitlab.freedesktop.org/mesa/waffle.git
 git clone https://gitlab.freedesktop.org/mesa/piglit.git
 git clone https://android.googlesource.com/platform/external/deqp/
-git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b opengl-cts-4.6.2
+git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b opengl-cts-4.6.3
 ```
 
 
