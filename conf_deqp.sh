@@ -4,7 +4,9 @@ set -e
 
 python3 external/fetch_sources.py
 
-cmake . -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo
+mkdir build
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
 echo
 echo !!! DEQP is not supposed to be installed !!!
+echo Type \"ninja -Cbuild\" to build.

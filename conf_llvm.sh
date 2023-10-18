@@ -20,7 +20,7 @@ if test x$1 = x32; then
         -DZLIB_LIBRARY_RELEASE="/usr/lib/i386-linux-gnu/libz.so" \
         -Dzstd_LIBRARY="/usr/lib/i386-linux-gnu/libzstd.so"
 
-    echo -e "[binaries]\nllvm-config = '$prefix/llvm-i386/bin/llvm-config'\n" > `dirname $0`/llvm_config_i386-linux-gnu.cfg
+    echo -e "[binaries]\nllvm-config = '$prefix/llvm-i386/bin/llvm-config'\n" > `dirname $0`/../llvm_config_i386-linux-gnu.cfg
 else
     # 64-bit build
     rm -rf build
@@ -38,7 +38,7 @@ else
         -DCMAKE_CXX_FLAGS_RELEASE="-O2 -g1 -fno-omit-frame-pointer"
 
 
-    echo -e "[binaries]\nllvm-config = '$prefix/llvm/bin/llvm-config'\n" > `dirname $0`/llvm_config_x86_64-linux-gnu.cfg
+    echo -e "[binaries]\nllvm-config = '$prefix/llvm/bin/llvm-config'\n" > `dirname $0`/../llvm_config_x86_64-linux-gnu.cfg
 fi
 
 cd ..

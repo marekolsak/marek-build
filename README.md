@@ -12,7 +12,7 @@ sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev li
 Put `/usr/lib/ccache:` at the beginning of PATH in `/etc/environment`.
 
 ```bash
-ccache --max-size=50G
+ccache --max-size=30G
 ```
 
 Cloning repos
@@ -86,23 +86,27 @@ cd libva
 meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
 ninja -Cbuild
 sudo ninja -Cbuild install
+cd ..
 
 # Wayland (for wayland-protocols)
 cd wayland
 meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
 ninja -Cbuild
 sudo ninja -Cbuild install
+cd ..
 
 # wayland-protocols
 cd wayland-protocols
 meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
 ninja -Cbuild
 sudo ninja -Cbuild install
+cd ..
 
 # Kernel
 cd linux
 sudo apt install linux-source; cp -r /usr/src/linux-source-*/debian . # to fix a compile failure on Ubuntu
 ../marek-build/build_kernel.sh
+cd ..
 
 # libdrm
 cd drm
@@ -112,6 +116,7 @@ ninja -Cbuild
 ninja -Cbuild32
 sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
+cd ..
 
 # LLVM
 cd llvm-project
@@ -123,6 +128,7 @@ ninja -Cbuild32
 sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 sudo ldconfig
+cd ..
 
 # Mesa
 cd mesa
@@ -133,6 +139,7 @@ ninja -Cbuild32
 sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 sudo ldconfig
+cd ..
 
 # Install the latest 64-bit and 32-bit glxgears and glxinfo (this uses the demos repository)
 sudo marek-build/make-install_glx-utils-32.sh
@@ -142,6 +149,7 @@ cd xf86-video-amdgpu
 ./autogen.sh --prefix=/usr
 make -j`nproc`
 sudo make install
+cd ..
 ```
 
 The above instructions overwrite distribution libraries and header files. If your Linux distribution updates them, you'll have to reinstall them from source.
@@ -158,21 +166,34 @@ cd waffle
 ../marek-build/conf_waffle.sh
 ninja -Cbuild
 sudo ninja -Cbuild install
+cd ..
 
 # piglit
 cd piglit
 ../marek-build/conf_piglit.sh
 ninja
+cd ..
 
 # deqp
 cd deqp
 ../marek-build/conf_deqp.sh
-ninja
+ninja -Cbuild
+cd ..
 
 # glcts
 cd glcts
-../marek-build/conf_glcts.sh
-ninja
+../marek-build/conf_glcts.sh gl
+ninja -Cbuild
+cd ..
+
+# escts (same as glcts, different branch, copying glcts/.git instead of cloning it)
+mkdir escts
+cd escts
+cp -r ../glcts/.git
+git reset --hard
+git checkout opengl-es-cts-3.2.9
+../marek-build/conf_glcts.sh gles32
+ninja -Cbuild
 ```
 
 
