@@ -49,7 +49,7 @@ git clone https://gitlab.freedesktop.org/mesa/demos.git # just for glxinfo and g
 # For test suites:
 git clone https://gitlab.freedesktop.org/mesa/waffle.git
 git clone https://gitlab.freedesktop.org/mesa/piglit.git
-git clone https://android.googlesource.com/platform/external/deqp/
+git clone https://android.googlesource.com/platform/external/deqp/ -b main
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b opengl-cts-4.6.3
 ```
 
@@ -189,7 +189,7 @@ cd ..
 # escts (same as glcts, different branch, copying glcts/.git instead of cloning it)
 mkdir escts
 cd escts
-cp -r ../glcts/.git
+cp -r ../glcts/.git .
 git reset --hard
 git checkout opengl-es-cts-3.2.9
 ../marek-build/conf_glcts.sh gles32
