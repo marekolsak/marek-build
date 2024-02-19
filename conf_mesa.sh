@@ -36,7 +36,7 @@ else
 
     #others="-Dgallium-xa=true -Dgallium-nine=true -Dgallium-omx=bellagio -Dbuild-tests=true -Dtools=glsl,nir"
     #others="-Dbuild-tests=true -Dtools=glsl,nir"
-    videocodecs=h264dec,h264enc,h265dec,h265enc
+    videocodecs=all
 fi
 
 rm -r build$1
