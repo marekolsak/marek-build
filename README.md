@@ -49,8 +49,7 @@ git clone https://gitlab.freedesktop.org/mesa/demos.git # just for glxinfo and g
 # For test suites:
 git clone https://gitlab.freedesktop.org/mesa/waffle.git
 git clone https://gitlab.freedesktop.org/mesa/piglit.git
-git clone https://android.googlesource.com/platform/external/deqp/ -b main
-git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b opengl-cts-4.6.3
+git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b main
 ```
 
 
@@ -65,7 +64,6 @@ git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b opengl-cts-4.6.
 **Build order for test suites:**
 - waffle (depends on mesa) - install
 - piglit (depends on mesa and waffle) - don't install
-- deqp (depends on mesa) - don't install
 - glcts (depends on mesa) - don't install
 
 
@@ -174,26 +172,12 @@ cd piglit
 ninja
 cd ..
 
-# deqp
-cd deqp
-../marek-build/conf_deqp.sh
-ninja -Cbuild
-cd ..
-
 # glcts
 cd glcts
 ../marek-build/conf_glcts.sh gl
 ninja -Cbuild
+ninja -Cbuild_es
 cd ..
-
-# escts (same as glcts, different branch, copying glcts/.git instead of cloning it)
-mkdir escts
-cd escts
-cp -r ../glcts/.git .
-git reset --hard
-git checkout opengl-es-cts-3.2.9
-../marek-build/conf_glcts.sh gles32
-ninja -Cbuild
 ```
 
 
@@ -226,7 +210,7 @@ Test suites and regression testing
 ----------------------------------
 
 Initial setup:
-- mesa, piglit, deqp, and glcts directories must be next to each other.
+- mesa, piglit, and glcts directories must be next to each other.
 - Add `PATH=$HOME/?/mesa/src/gallium/drivers/radeonsi/ci:$PATH` into `.bashrc`. Replace `?` with the proper path.
 - Install Rust, which will include its package manager Cargo: https://www.rust-lang.org/tools/install
   - The installer will add the Cargo environment into `.bashrc`, which will add cargo into `PATH`.
