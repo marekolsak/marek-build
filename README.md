@@ -49,7 +49,7 @@ git clone https://gitlab.freedesktop.org/mesa/demos.git # just for glxinfo and g
 # For test suites:
 git clone https://gitlab.freedesktop.org/mesa/waffle.git
 git clone https://gitlab.freedesktop.org/mesa/piglit.git
-git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts -b main
+git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts
 ```
 
 
