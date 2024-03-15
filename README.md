@@ -174,7 +174,7 @@ cd ..
 
 # glcts
 cd glcts
-../marek-build/conf_glcts.sh gl
+../marek-build/conf_glcts.sh
 ninja -Cbuild
 ninja -Cbuild_es
 cd ..
