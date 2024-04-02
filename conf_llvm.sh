@@ -19,6 +19,7 @@ if test x$1 = x32; then
         -DTerminfo_LIBRARIES="/usr/lib/i386-linux-gnu/libtinfo.so" \
         -DZLIB_LIBRARY_RELEASE="/usr/lib/i386-linux-gnu/libz.so" \
         -Dzstd_LIBRARY="/usr/lib/i386-linux-gnu/libzstd.so"
+    cd ..
 
     echo -e "[binaries]\nllvm-config = '$prefix/llvm-i386/bin/llvm-config'\n" > `dirname $0`/../llvm_config_i386-linux-gnu.cfg
 else
@@ -36,7 +37,7 @@ else
         -DLLVM_CCACHE_BUILD=ON -DLLVM_ENABLE_RTTI=ON \
         -DCMAKE_C_FLAGS_RELEASE="-O2 -g1 -fno-omit-frame-pointer" \
         -DCMAKE_CXX_FLAGS_RELEASE="-O2 -g1 -fno-omit-frame-pointer"
-
+    cd ..
 
     echo -e "[binaries]\nllvm-config = '$prefix/llvm/bin/llvm-config'\n" > `dirname $0`/../llvm_config_x86_64-linux-gnu.cfg
 fi
