@@ -11,7 +11,7 @@ if test x$1 = x32; then
     profile="-g"
 
     gallium_drivers=radeonsi
-    others="-Dplatforms=x11 -Dgallium-vdpau=disabled -Dpkg_config_path=${prefix}/lib/$arch/pkgconfig" # -Dbuild-tests=true"
+    others="-Dplatforms=x11 -Dgallium-vdpau=disabled -Dpkg_config_path=${prefix}/lib/$arch/pkgconfig:/usr/lib/$arch/pkgconfig" # -Dbuild-tests=true"
 
     export CC="gcc -m32"
     export CXX="g++ -m32"
