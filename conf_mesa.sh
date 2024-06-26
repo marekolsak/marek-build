@@ -36,6 +36,7 @@ else
 
     #others="-Dgallium-xa=true -Dgallium-nine=true -Dgallium-omx=bellagio -Dbuild-tests=true -Dtools=glsl,nir"
     #others="-Dbuild-tests=true -Dtools=glsl,nir"
+    #others="-Dplatforms=wayland -Dglx=disabled" #force use egl
     videocodecs=all
 fi
 
