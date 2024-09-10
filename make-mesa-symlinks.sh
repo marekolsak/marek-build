@@ -57,3 +57,5 @@ create_links $prefix/${dir}/build   /usr/lib/x86_64-linux-gnu true
 create_links $prefix/${dir}/build32 /usr/lib/i386-linux-gnu false
 
 ln -sf $prefix/${dir}/src/util/00-mesa-defaults.conf /usr/share/drirc.d/00-mesa-defaults.conf
+
+ldconfig
