@@ -41,10 +41,11 @@ create_links()
     ln -sf $mesalibs/src/amd/vulkan/libvulkan_radeon.so $libdir/libvulkan_radeon.so
 
     if $3; then
-        ln -sf $mesalibs/src/gallium/targets/va/libgallium_drv_video.so $libdir/dri/radeonsi_drv_video.so
+        drv_video_so=$mesalibs/src/gallium/targets/dri/$libgallium_so
+        ln -sf $drv_video_so $libdir/dri/radeonsi_drv_video.so
 
         mkdir -p $libdir/vdpau
-        ln -sf $mesalibs/src/gallium/targets/vdpau/libvdpau_gallium.so  $libdir/vdpau/libvdpau_radeonsi.so.1.0.0
+        ln -sf $drv_video_so $libdir/vdpau/libvdpau_radeonsi.so.1.0.0
 
         ln -sf $mesalibs/src/gallium/targets/lavapipe/libvulkan_lvp.so $libdir/libvulkan_lvp.so
     fi
