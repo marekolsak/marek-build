@@ -29,6 +29,7 @@ create_links()
     ln -sf $mesalibs/src/egl/libEGL_mesa.so             $libdir/libEGL_mesa.so.0.0.0
     ln -sf $mesalibs/src/glx/libGLX_mesa.so             $libdir/libGLX_mesa.so.0.0.0
     ln -sf $mesalibs/src/gbm/libgbm.so                  $libdir/libgbm.so.1.0.0
+    ln -sf $mesalibs/src/gbm/backends/dri/dri_gbm.so    $libdir/gbm/dri_gbm.so
     ln -sf $mesalibs/src/mapi/shared-glapi/libglapi.so  $libdir/libglapi.so.0.0.0
 
     ln -sf $mesalibs/src/gallium/targets/dri/$libgallium_so     $libdir/$libgallium_so
