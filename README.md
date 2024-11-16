@@ -6,7 +6,13 @@ These instructions have only been tested on Ubuntu 20.04.
 You are going to need the following packages:
 
 ```bash
-sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libelf-dev:i386 libzstd-dev libzstd-dev:i386 zstd python3-setuptools libpciaccess-dev libpciaccess-dev:i386 ninja-build libcairo2-dev libcairo2-dev:i386 gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libudev-dev:i386 libglvnd-dev libglvnd-dev:i386 libxml2-dev libxml2-dev:i386 graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libxcb-glx0-dev:i386 libx11-xcb-dev libx11-xcb-dev:i386 libxcb-dri2-0-dev libxcb-dri2-0-dev:i386 libxcb-dri3-dev libxcb-dri3-dev:i386 libxcb-present-dev libxcb-present-dev:i386 libxshmfence-dev libxshmfence-dev:i386 libxfixes-dev:i386 libxxf86vm-dev:i386 libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev libvdpau-dev wayland-protocols libwayland-egl-backend-dev python3-mako libxrandr-dev:i386 libwayland-dev:i386 libwayland-egl-backend-dev:i386 libsensors-dev libsensors-dev:i386 libunwind-dev libunwind-dev:i386 valgrind libxcb-keysyms1-dev libxcb-keysyms1-dev:i386 curl
+sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev libvdpau-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev
+```
+
+Also 32-bit packages:
+
+```bash
+sudo apt install libelf-dev:i386 libzstd-dev:i386 libpciaccess-dev:i386 libcairo2-dev:i386 libudev-dev:i386 libglvnd-dev:i386 libxml2-dev:i386 libxcb-glx0-dev:i386 libx11-xcb-dev:i386 libxcb-dri2-0-dev:i386 libxcb-dri3-dev:i386 libxcb-present-dev:i386 libxshmfence-dev:i386 libxfixes-dev:i386 libxxf86vm-dev:i386 libxrandr-dev:i386 libwayland-dev:i386 libwayland-egl-backend-dev:i386 libsensors-dev:i386 libunwind-dev:i386 libxcb-keysyms1-dev:i386
 ```
 
 Put `/usr/lib/ccache:` at the beginning of PATH in `/etc/environment`.
@@ -47,7 +53,6 @@ git clone https://gitlab.freedesktop.org/mesa/mesa.git
 git clone https://gitlab.freedesktop.org/mesa/demos.git # just for glxinfo and glxgears
 
 # For test suites:
-git clone https://gitlab.freedesktop.org/mesa/waffle.git
 git clone https://gitlab.freedesktop.org/mesa/piglit.git
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts
 ```
@@ -62,8 +67,7 @@ git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts
 - xf86-video-amdgpu (depends on libdrm and mesa)
 
 **Build order for test suites:**
-- waffle (depends on mesa) - install
-- piglit (depends on mesa and waffle) - don't install
+- piglit (depends on mesa) - don't install
 - glcts (depends on mesa) - don't install
 
 
@@ -159,13 +163,6 @@ Building OpenGL test suites
 For GLCTS, you need a Khronos account and you need to upload your ssh public key into your Khronos Gitlab account. Then the conf_glcts.sh script will fetch additional Khronos source code that you need for building the desktop OpenGL Conformance Test Suite.
 
 ```bash
-# Waffle
-cd waffle
-../marek-build/conf_waffle.sh
-ninja -Cbuild
-sudo ninja -Cbuild install
-cd ..
-
 # piglit
 cd piglit
 ../marek-build/conf_piglit.sh

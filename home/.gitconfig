@@ -7,6 +7,7 @@
 	ri = rebase -i
 	rio = rebase -i origin
 	rc = rebase --continue
+        ra = rebase --abort
 	b = branch
 	bg = bisect good
 	bb = bisect bad
