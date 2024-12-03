@@ -77,31 +77,6 @@ Notes:
 
 ```bash
 
-# Meson
-cd build-meson
-sudo python3 setup.py install
-
-# libva
-cd libva
-meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
-ninja -Cbuild
-sudo ninja -Cbuild install
-cd ..
-
-# Wayland (for wayland-protocols)
-cd wayland
-meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
-ninja -Cbuild
-sudo ninja -Cbuild install
-cd ..
-
-# wayland-protocols
-cd wayland-protocols
-meson build -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu
-ninja -Cbuild
-sudo ninja -Cbuild install
-cd ..
-
 # Kernel
 cd linux
 sudo apt install linux-source; cp -r /usr/src/linux-source-*/debian . # to fix a compile failure on Ubuntu
