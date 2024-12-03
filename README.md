@@ -30,27 +30,20 @@ Cloning repos
 -------------
 
 These can be skipped depending on your circumstances:
-- linux-firmware: Not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and running `sudo update-initramfs -k all -u` to update initrd. The kernel only loads firmware from initrd.
-- meson, libva, wayland-protocols (and the wayland dependency) are not needed if Mesa doesn't fail to configure. Ubuntu 20.04 needs them all. Ubuntu 22.04 might not.
+- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. It's recommended to only download the latest tagged archive, not the whole repository. Not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and running `sudo update-initramfs -k all -u` to update initrd. The kernel only loads firmware from initrd.
 - libdrm can be skipped if Mesa doen't fail to configure, but that's rare.
-- xf86-video-amdgpu is almost always not needed unless somebody explicitly told you that you need it.
-- The 32-bit driver is not needed if Steam isn't going to be used because only Steam and some Steam games use it.
+- xf86-video-amdgpu usually doesn't need an update.
+- The 32-bit driver is not needed if Steam isn't going to be used because only Steam and some Steam games need 32-bit drivers.
 
 Clone with ssh for the repositories where you will want to push. The below commands only give you read-only access.
 
 ```bash
 
-git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git # Ideally use the AMD internal repository instead
-git clone https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu.git
-
-# Dependencies
+# For configure scripts
 git clone https://github.com/marekolsak/marek-build.git
-git clone https://github.com/mesonbuild/meson.git build-meson
-git clone https://github.com/intel/libva.git
-git clone https://gitlab.freedesktop.org/wayland/wayland.git
-git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.git
 
 # For the driver:
+git clone https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu.git
 git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next # Ideally use the AMD internal repository instead
 git clone https://gitlab.freedesktop.org/mesa/drm.git
 git clone https://github.com/llvm/llvm-project.git
