@@ -26,6 +26,8 @@ create_links()
         exit 1
     fi
 
+    mkdir -p $libdir/gbm
+
     ln -sf $mesalibs/src/egl/libEGL_mesa.so             $libdir/libEGL_mesa.so.0.0.0
     ln -sf $mesalibs/src/glx/libGLX_mesa.so             $libdir/libGLX_mesa.so.0.0.0
     ln -sf $mesalibs/src/gbm/libgbm.so                  $libdir/libgbm.so.1.0.0
