@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Check if the last parameter is -d, indicating that gdb should be used
+if test ${@: -1} == -d; then
+    # Remove the last parameter
+    # https://stackoverflow.com/questions/20398499/remove-last-argument-from-argument-list-of-shell-script-bash
+    set -- "${@:1:$(($#-1))}"
+    (cd $HOME/dev/glcts/build/external/openglcts/modules; gdb --args ./glcts $@)
+else
+    (cd $HOME/dev/glcts/build/external/openglcts/modules; ./glcts $@)
+fi
