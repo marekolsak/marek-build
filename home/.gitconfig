@@ -9,6 +9,9 @@
 	rc = rebase --continue
         ra = rebase --abort
 	b = branch
+        bs = bisect start HEAD origin
+        brun = bisect run sh -c
+        br = bisect reset
 	bg = bisect good
 	bb = bisect bad
 	a = commit --amend -v
