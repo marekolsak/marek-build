@@ -16,6 +16,7 @@
 	bb = bisect bad
 	a = commit --amend -v
 	aa = commit --amend -a -v
+        au = add -u
 	d = diff
 	dc = diff --cached
 	s = show
