@@ -133,8 +133,6 @@ The above instructions overwrite distribution libraries and header files. If you
 Building OpenGL test suites
 ---------------------------
 
-For GLCTS, you need a Khronos account and you need to upload your ssh public key into your Khronos Gitlab account. Then the conf_glcts.sh script will fetch additional Khronos source code that you need for building the desktop OpenGL Conformance Test Suite.
-
 ```bash
 # piglit
 cd piglit
