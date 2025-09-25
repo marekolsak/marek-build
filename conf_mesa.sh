@@ -8,7 +8,7 @@ if test x$1 = x32; then
     export CC="gcc -m32"
     export CXX="g++ -m32"
     arch=i386-linux-gnu
-    mm="-Dgallium-vdpau=disabled -Dgallium-va=disabled"
+    mm="-Dgallium-va=disabled"
 
     buildtype=release
     profile="-g"
@@ -17,7 +17,7 @@ if test x$1 = x32; then
     vulkandrv=amd
 else
     arch=x86_64-linux-gnu
-    mm="-Dgallium-vdpau=enabled -Dgallium-va=enabled -Dvideo-codecs=av1dec,av1enc,vp9dec,vc1dec,h264dec,h264enc,h265dec,h265enc"
+    mm="-Dgallium-va=enabled -Dvideo-codecs=av1dec,av1enc,vp9dec,vc1dec,h264dec,h264enc,h265dec,h265enc"
 
     # comment or uncomment the following settings
 

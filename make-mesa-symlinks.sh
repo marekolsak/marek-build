@@ -47,9 +47,6 @@ create_links()
         drv_video_so=$mesalibs/src/gallium/targets/dri/$libgallium_so
         ln -sf $drv_video_so $libdir/dri/radeonsi_drv_video.so
 
-        mkdir -p $libdir/vdpau
-        ln -sf $drv_video_so $libdir/vdpau/libvdpau_radeonsi.so.1.0.0
-
         ln -sf $mesalibs/src/gallium/targets/lavapipe/libvulkan_lvp.so $libdir/libvulkan_lvp.so
     fi
 }
