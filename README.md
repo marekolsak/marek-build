@@ -6,7 +6,7 @@ These instructions have only been tested on Ubuntu 20.04.
 You are going to need the following packages:
 
 ```bash
-sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev python3-pip
+sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev python3-pip mold
 ```
 
 Also 32-bit packages:
@@ -97,10 +97,13 @@ cd ..
 cd llvm-project
 sudo cp ../marek-build/etc/ld.so.conf.d/marek_llvm.conf /etc/ld.so.conf.d/
 ../marek-build/conf_llvm.sh
-../marek-build/conf_llvm.sh 32
 ninja -Cbuild
-ninja -Cbuild32
 sudo ninja -Cbuild install
+sudo ldconfig
+
+# LLVM 32-bit - you can skip this because conf_mesa.sh always uses ACO for 32-bit arch
+../marek-build/conf_llvm.sh 32
+ninja -Cbuild32
 sudo ninja -Cbuild32 install
 sudo ldconfig
 cd ..
