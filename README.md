@@ -139,15 +139,14 @@ Building OpenGL test suites
 ```bash
 # piglit
 cd piglit
-../marek-build/conf_piglit.sh
+../mesa/src/gallium/drivers/radeonsi/ci/build/conf_piglit.sh
 ninja
 cd ..
 
 # glcts
 cd glcts
-../marek-build/conf_glcts.sh
+../mesa/src/gallium/drivers/radeonsi/ci/build/conf_glcts.sh
 ninja -Cbuild
-ninja -Cbuild_es
 cd ..
 ```
 
