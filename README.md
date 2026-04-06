@@ -32,7 +32,7 @@ Cloning repos
 -------------
 
 Notes:
-- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. It's recommended to only download the latest tagged archive, not the whole repository. Not necessary if the distribution already contains firmware for the GPU. Current firmware can be found in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and running `sudo update-initramfs -k all -u` to update initrd. The kernel only loads firmware from initrd.
+- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. It's recommended to only download the latest tagged archive, not the whole repository. Getting newer firmware is not necessary if the distribution already contains firmware for the GPU. Installed firmware can be found in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and running `sudo update-initramfs -k all -u` to update initrd. The kernel only loads firmware from initrd.
 - libdrm can be skipped if Mesa doesn't fail to configure, but that's rare.
 - The 32-bit driver is not needed if Steam is not going to be used because only Steam and some Steam games need 32-bit drivers.
 - xf86-video-amdgpu is not needed. The modesetting DDX is recommended instead, which is part of the X server and is required by zink (in case that's needed).
@@ -131,6 +131,10 @@ cd mesa
 ../marek-build/conf_mesa.sh 32
 ninja -Cbuild
 ninja -Cbuild32
+
+# Installing Mesa is optional and might not be ideal depending on your
+# development setup. See the section about how to use Mesa without installing
+# it below.
 sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 sudo ldconfig
@@ -173,8 +177,8 @@ PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
 ```
 
 
-Mesa development and testing without subsequent installation
-------------------------------------------------------------
+Using Mesa without installing it
+--------------------------------
 
 After running `ninja install` for Mesa, it's not needed to install it every time it's rebuilt if you add symlinks from `/usr/lib` into the build directory. Then just build Mesa and the next started app will use it. There is a script that creates the symlinks:
 
