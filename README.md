@@ -122,8 +122,10 @@ sudo ldconfig
 cd ..
 
 # Mesa
-# If LLVM is enabled, edit llvm_config_x86_64-linux-gnu.cfg to point to the preferred installed llvm-config if needed.
-# Most people edit conf_mesa.sh to adjust Mesa build options.
+# The script expects LLVM 21 from the distribution, which is the version
+# present in Ubuntu 26.04. If LLVM isn't found, edit llvm_config_x86_64-linux-gnu.cfg
+# to point to the preferred installed llvm-config.
+# Some people also edit conf_mesa.sh to adjust the build options.
 cd mesa
 ../marek-build/conf_mesa.sh
 ../marek-build/conf_mesa.sh 32
