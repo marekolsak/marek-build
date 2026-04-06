@@ -53,28 +53,28 @@ You can also use ssh addresses for these if needed.
 # For configure scripts
 git clone https://github.com/marekolsak/marek-build.git
 
-# For the driver:
-git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next # AMD staff should use the internal repository instead
+# For the kernel:
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+cd linux
+git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git # AMD staff should use the internal repository instead
+git fetch agd5f
+git checkout amd-staging-drm-next
+
+# For userspace:
 git clone https://gitlab.freedesktop.org/mesa/libdrm.git
 git clone https://github.com/llvm/llvm-project.git # only if needed
 git clone https://gitlab.freedesktop.org/mesa/mesa.git
 git clone https://gitlab.freedesktop.org/mesa/demos.git # just for 32-bit glxinfo and glxgears
-
-# For test suites:
 git clone https://gitlab.freedesktop.org/mesa/piglit.git
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git cts
 ```
 
 **Build order for the driver:**
-- linux-firmware (just copy the firmware files to /lib/firmware/amdgpu/)
+- linux-firmware (just copy the firmware files to /lib/firmware/amdgpu/ if needed)
 - linux (the kernel, it uses firmware)
 - libdrm
-- llvm
+- llvm (if needed)
 - mesa (depends on libdrm and optionally llvm)
-
-**Build order for test suites:**
-- piglit (depends on mesa) - don't install
-- cts (depends on mesa) - don't install
 
 
 Building the driver
@@ -147,6 +147,8 @@ cd cts
 ninja -Cbuild
 cd ..
 ```
+
+Do not install the test suites. They should be run from their build directory.
 
 
 First test
