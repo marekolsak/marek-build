@@ -1,41 +1,52 @@
 Marek's approach to building AMD GPU drivers for driver development
 ===================================================================
 
-These instructions have only been tested on Ubuntu 20.04.
+These instructions have only been tested on Ubuntu 24.04 and 26.04.
 
 You are going to need the following packages:
 
 ```bash
-sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev python3-pip mold
+sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev python3-pip mold mesa-utils vulkan-tools linux-source
 ```
 
-Also 32-bit packages:
+Also 32-bit packages (only Ubuntu 26.04 requires the dpkg command):
 
 ```bash
+sudo dpkg --add-architecture i386
 sudo apt install libelf-dev:i386 libzstd-dev:i386 libpciaccess-dev:i386 libcairo2-dev:i386 libudev-dev:i386 libglvnd-dev:i386 libxml2-dev:i386 libxcb-glx0-dev:i386 libx11-xcb-dev:i386 libxcb-dri2-0-dev:i386 libxcb-dri3-dev:i386 libxcb-present-dev:i386 libxshmfence-dev:i386 libxfixes-dev:i386 libxxf86vm-dev:i386 libxrandr-dev:i386 libwayland-dev:i386 libwayland-egl-backend-dev:i386 libsensors-dev:i386 libunwind-dev:i386 libxcb-keysyms1-dev:i386
 ```
 
-Put `/usr/lib/ccache:` at the beginning of PATH in `/etc/environment`.
+Put `/usr/lib/ccache:` at the beginning of PATH in `/etc/environment`. Optionally change the ccache max size:
 
 ```bash
-ccache --max-size=30G
+ccache --max-size=50G
 ```
 
-Instal meson as follows:
+Ubuntu 26.04 may have recent enough meson that apt may be sufficient. If not, use pip. Choose one of these:
 ```bash
+sudo apt install meson
 sudo pip install meson --break-system-packages
 ```
 
 Cloning repos
 -------------
 
-These can be skipped depending on your circumstances:
+Notes:
 - linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. It's recommended to only download the latest tagged archive, not the whole repository. Not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and running `sudo update-initramfs -k all -u` to update initrd. The kernel only loads firmware from initrd.
-- libdrm can be skipped if Mesa doen't fail to configure, but that's rare.
-- xf86-video-amdgpu usually doesn't need an update.
-- The 32-bit driver is not needed if Steam isn't going to be used because only Steam and some Steam games need 32-bit drivers.
+- libdrm can be skipped if Mesa doesn't fail to configure, but that's rare.
+- The 32-bit driver is not needed if Steam is not going to be used because only Steam and some Steam games need 32-bit drivers.
+- xf86-video-amdgpu is not needed. Use the modesetting DDX instead, which is part of the X server and is required by zink if you ever want to use that.
+- LLVM isn't needed if you only plan to use ACO (which is the AMD GPU shader compiler in Mesa) or alternatively you can get LLVM from the distribution. If you do build LLVM, using the latest release branch of LLVM is recommended.
+- mesa/demos is only needed for building 32-bit glxinfo and glxgears to verify whether 32-bit Mesa is installed correctly and functional. 64-bit glxinfo and glxgears is provided by the distribution.
 
-Clone with ssh for the repositories where you will want to push. The below commands only give you read-only access.
+These are always recommended to build from source:
+- linux
+- libdrm
+- mesa
+- piglit
+- VK-GL-CTS
+
+You can also use ssh addresses for these if needed.
 
 ```bash
 
@@ -43,43 +54,37 @@ Clone with ssh for the repositories where you will want to push. The below comma
 git clone https://github.com/marekolsak/marek-build.git
 
 # For the driver:
-git clone https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu.git
-git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next # Ideally use the AMD internal repository instead
-git clone https://gitlab.freedesktop.org/mesa/drm.git
-git clone https://github.com/llvm/llvm-project.git
+git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next # AMD staff should use the internal repository instead
+git clone https://gitlab.freedesktop.org/mesa/drm.git # libdrm, only if needed
+git clone https://github.com/llvm/llvm-project.git # only if needed
 git clone https://gitlab.freedesktop.org/mesa/mesa.git
-git clone https://gitlab.freedesktop.org/mesa/demos.git # just for glxinfo and glxgears
+git clone https://gitlab.freedesktop.org/mesa/demos.git # just for 32-bit glxinfo and glxgears
 
 # For test suites:
 git clone https://gitlab.freedesktop.org/mesa/piglit.git
-git clone https://github.com/KhronosGroup/VK-GL-CTS.git glcts
+git clone https://github.com/KhronosGroup/VK-GL-CTS.git cts
 ```
 
-
 **Build order for the driver:**
-- firmware (just copy the firmware files to /lib/firmware/amdgpu/)
-- kernel (depends on firmware)
+- linux-firmware (just copy the firmware files to /lib/firmware/amdgpu/)
+- linux (the kernel, it uses firmware)
 - libdrm
 - llvm
-- mesa (depends on libdrm and llvm)
-- xf86-video-amdgpu (depends on libdrm and mesa)
+- mesa (depends on libdrm and optionally llvm)
 
 **Build order for test suites:**
 - piglit (depends on mesa) - don't install
-- glcts (depends on mesa) - don't install
+- cts (depends on mesa) - don't install
 
 
 Building the driver
 -------------------
 
-Notes:
-- If you get Mesa build failures due to LLVM, go back to llvm-project, check out the latest release/* branch in git, and repeat all step for LLVM. Then repeat all steps for Mesa.
-
 ```bash
 
 # Kernel
 cd linux
-sudo apt install linux-source; cp -r /usr/src/linux-source-*/debian . # to fix a compile failure on Ubuntu
+cp -r /usr/src/linux-source-*/debian . # to fix a compile failure on Ubuntu
 ../marek-build/build_kernel.sh
 cd ..
 
@@ -93,7 +98,7 @@ sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 cd ..
 
-# LLVM
+# LLVM (optional)
 cd llvm-project
 sudo cp ../marek-build/etc/ld.so.conf.d/marek_llvm.conf /etc/ld.so.conf.d/
 ../marek-build/conf_llvm.sh
@@ -101,7 +106,7 @@ ninja -Cbuild
 sudo ninja -Cbuild install
 sudo ldconfig
 
-# LLVM 32-bit - you can skip this because conf_mesa.sh always uses ACO for 32-bit arch
+# LLVM 32-bit (optional) - you can skip this because conf_mesa.sh always uses ACO for 32-bit arch
 ../marek-build/conf_llvm.sh 32
 ninja -Cbuild32
 sudo ninja -Cbuild32 install
@@ -119,21 +124,14 @@ sudo ninja -Cbuild32 install
 sudo ldconfig
 cd ..
 
-# Install the latest 64-bit and 32-bit glxgears and glxinfo (this uses the demos repository)
+# 64-bit and 32-bit glxgears and glxinfo (optional, this uses the demos repository)
 sudo marek-build/make-install_glx-utils-32.sh
-
-# xf86-video-amdgpu (usually not needed)
-cd xf86-video-amdgpu
-./autogen.sh --prefix=/usr
-make -j`nproc`
-sudo make install
-cd ..
 ```
 
-The above instructions overwrite distribution libraries and header files. If your Linux distribution updates them, you'll have to reinstall them from source.
+The above instructions overwrite distribution libraries and header files. If your Linux distribution updates them, they may have to be reinstalled from source.
 
 
-Building OpenGL test suites
+Building test suites
 ---------------------------
 
 ```bash
@@ -143,8 +141,8 @@ cd piglit
 ninja
 cd ..
 
-# glcts
-cd glcts
+# VK-GL-CTS
+cd cts
 ../mesa/src/gallium/drivers/radeonsi/ci/build/conf_glcts.sh
 ninja -Cbuild
 cd ..
@@ -154,20 +152,18 @@ cd ..
 First test
 ----------
 
-Verify that the driver is working without Xorg. If this works, Xorg will work too.
+Verify that the driver works without Xorg. If this works, Xorg will work too.
 
 ```bash
 PIGLIT_PLATFORM=gbm piglit/bin/glinfo
 PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
 ```
 
-Xorg startup crashes can be debugged via gdb over ssh like this: `sudo gdb /usr/lib/xorg/Xorg`
-
 
 Mesa development and testing without subsequent installation
 ------------------------------------------------------------
 
-After you run `ninja install` for Mesa, you don't have to install it every time you rebuild it if you add symlinks from `/usr/lib` into your build directory. Then, you just build Mesa and the next started app will use it. There is a script that creates the symlinks:
+After you run `ninja install` for Mesa, you don't have to install it every time you rebuild it if you add symlinks from `/usr/lib` into your build directory. Then just build Mesa and the next started app will use it. There is a script that creates the symlinks:
 
 ```bash
 marek-build/make-mesa-symlinks.sh
@@ -180,7 +176,7 @@ Test suites and regression testing
 ----------------------------------
 
 Initial setup:
-- mesa, piglit, and glcts directories must be next to each other.
+- mesa, piglit, and cts directories must be next to each other.
 - Add `PATH=$HOME/?/mesa/src/gallium/drivers/radeonsi/ci:$PATH` into `.bashrc`. Replace `?` with the proper path.
 - Install Rust, which will include its package manager Cargo: https://www.rust-lang.org/tools/install
   - The installer will add the Cargo environment into `.bashrc`, which will add cargo into `PATH`.
