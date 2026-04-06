@@ -6,7 +6,7 @@ These instructions have only been tested on Ubuntu 24.04 and 26.04.
 You are going to need the following packages:
 
 ```bash
-sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev python3-pip mold mesa-utils vulkan-tools libdw-dev gawk
+sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev python3-pip mold mesa-utils vulkan-tools libdw-dev gawk llvm-dev
 ```
 
 Also 32-bit packages (only Ubuntu 26.04 requires the dpkg command):
@@ -38,8 +38,9 @@ Notes:
 - xf86-video-amdgpu is not needed. Use the modesetting DDX instead, which is part of the X server and is required by zink if you ever want to use that.
 - LLVM isn't needed if you only plan to use ACO (which is the AMD GPU shader compiler in Mesa) or alternatively you can get LLVM from the distribution. If you do build LLVM, using the latest release branch of LLVM is recommended.
 - mesa/demos is only needed for building 32-bit glxinfo and glxgears to verify whether 32-bit Mesa is installed correctly and functional. 64-bit glxinfo and glxgears is provided by the distribution.
+- If the distro kernel is recent enough, it may be sufficient.
 
-These are always recommended to build from source:
+These are usually recommended to build from source:
 - linux
 - libdrm
 - mesa
@@ -82,10 +83,13 @@ Building the driver
 
 ```bash
 
+# 64-bit and 32-bit glxgears and glxinfo (optional, this uses the demos repository)
+sudo marek-build/make-install_glx-utils-32.sh
+
 # Kernel
 cd linux
 make oldconfig # later study localmodconfig to reduce the build size
-scripts/config --set-str SYSTEM_TRUSTED_KEYS "" # These two are needed on Ubuntu
+scripts/config --set-str SYSTEM_TRUSTED_KEYS "" # These are needed when building from a plain source tree
 scripts/config --set-str SYSTEM_REVOCATION_KEYS ""
 scripts/config --enable LOCALVERSION_AUTO # This appends additional version information like the git commit ID to the kernel version
 make olddefconfig
@@ -93,7 +97,7 @@ make olddefconfig
 cd ..
 
 # libdrm
-cd drm
+cd libdrm
 ../marek-build/conf_drm.sh
 ../marek-build/conf_drm.sh 32
 ninja -Cbuild
@@ -118,6 +122,8 @@ sudo ldconfig
 cd ..
 
 # Mesa
+# If LLVM is enabled, edit llvm_config_x86_64-linux-gnu.cfg to point to your installed llvm-config if needed.
+# Editing conf_mesa.sh may be needed depending on how you want to build it.
 cd mesa
 ../marek-build/conf_mesa.sh
 ../marek-build/conf_mesa.sh 32
@@ -127,16 +133,15 @@ sudo ninja -Cbuild install
 sudo ninja -Cbuild32 install
 sudo ldconfig
 cd ..
-
-# 64-bit and 32-bit glxgears and glxinfo (optional, this uses the demos repository)
-sudo marek-build/make-install_glx-utils-32.sh
 ```
 
 The above instructions overwrite distribution libraries and header files. If your Linux distribution updates them, they may have to be reinstalled from source.
 
 
 Building test suites
----------------------------
+--------------------
+
+These can be built independently of drivers.
 
 ```bash
 # piglit
@@ -152,7 +157,7 @@ ninja -Cbuild
 cd ..
 ```
 
-Do not install the test suites. They should be run from their build directory.
+Do not install the test suites. They should be run from their build directories.
 
 
 First test
