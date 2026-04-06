@@ -6,7 +6,7 @@ These instructions have only been tested on Ubuntu 24.04 and 26.04.
 You are going to need the following packages:
 
 ```bash
-sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev python3-pip mold mesa-utils vulkan-tools linux-source
+sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev python3-pip mold mesa-utils vulkan-tools libdw-dev gawk
 ```
 
 Also 32-bit packages (only Ubuntu 26.04 requires the dpkg command):
@@ -84,7 +84,11 @@ Building the driver
 
 # Kernel
 cd linux
-cp -r /usr/src/linux-source-*/debian . # to fix a compile failure on Ubuntu
+make oldconfig # later study localmodconfig to reduce the build size
+scripts/config --set-str SYSTEM_TRUSTED_KEYS "" # These two are needed on Ubuntu
+scripts/config --set-str SYSTEM_REVOCATION_KEYS ""
+scripts/config --enable LOCALVERSION_AUTO # This appends additional version information like the git commit ID to the kernel version
+make olddefconfig
 ../marek-build/build_kernel.sh
 cd ..
 
