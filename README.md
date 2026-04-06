@@ -3,7 +3,7 @@ Marek's approach to building AMD GPU drivers for driver development
 
 These instructions have only been tested on Ubuntu 24.04 and 26.04.
 
-You are going to need the following packages:
+The following packages are needed:
 
 ```bash
 sudo apt install git make gcc flex bison libncurses-dev libssl-dev libelf-dev libzstd-dev zstd python3-setuptools libpciaccess-dev ninja-build libcairo2-dev gcc-multilib cmake-curses-gui g++ g++-multilib ccache libudev-dev libglvnd-dev libxml2-dev graphviz doxygen xsltproc xmlto xorg-dev libxcb-glx0-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxshmfence-dev libxkbcommon-dev libvulkan-dev spirv-tools glslang-tools python3-numpy libcaca-dev python3-lxml autoconf libtool automake xutils-dev libva-dev wayland-protocols libwayland-egl-backend-dev python3-mako libsensors-dev libunwind-dev valgrind libxcb-keysyms1-dev curl libwaffle-dev python3-pip mold mesa-utils vulkan-tools libdw-dev gawk llvm-dev
@@ -32,11 +32,11 @@ Cloning repos
 -------------
 
 Notes:
-- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. It's recommended to only download the latest tagged archive, not the whole repository. Not necessary if your distribution already contains firmware for your GPU. You can find your current firmware in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and running `sudo update-initramfs -k all -u` to update initrd. The kernel only loads firmware from initrd.
+- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. It's recommended to only download the latest tagged archive, not the whole repository. Not necessary if the distribution already contains firmware for the GPU. Current firmware can be found in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and running `sudo update-initramfs -k all -u` to update initrd. The kernel only loads firmware from initrd.
 - libdrm can be skipped if Mesa doesn't fail to configure, but that's rare.
 - The 32-bit driver is not needed if Steam is not going to be used because only Steam and some Steam games need 32-bit drivers.
-- xf86-video-amdgpu is not needed. Use the modesetting DDX instead, which is part of the X server and is required by zink if you ever want to use that.
-- LLVM isn't needed if you only plan to use ACO (which is the AMD GPU shader compiler in Mesa) or alternatively you can get LLVM from the distribution. If you do build LLVM, using the latest release branch of LLVM is recommended.
+- xf86-video-amdgpu is not needed. The modesetting DDX is recommended instead, which is part of the X server and is required by zink (in case that's needed).
+- LLVM isn't needed if the goal is to use only ACO (which is the AMD GPU shader compiler in Mesa) or alternatively LLVM can be obtained from the distribution. If LLVM is built from source, using the latest release branch of LLVM is recommended.
 - mesa/demos is only needed for building 32-bit glxinfo and glxgears to verify whether 32-bit Mesa is installed correctly and functional. 64-bit glxinfo and glxgears is provided by the distribution.
 - If the distro kernel is recent enough, it may be sufficient.
 
@@ -47,7 +47,7 @@ These are usually recommended to build from source:
 - piglit
 - VK-GL-CTS
 
-You can also use ssh addresses for these if needed.
+ssh addresses can be used instead if needed.
 
 ```bash
 
@@ -114,7 +114,7 @@ ninja -Cbuild
 sudo ninja -Cbuild install
 sudo ldconfig
 
-# LLVM 32-bit (optional) - you can skip this because conf_mesa.sh always uses ACO for 32-bit arch
+# LLVM 32-bit (optional) - this is usually skipped because conf_mesa.sh always uses ACO for 32-bit arch
 ../marek-build/conf_llvm.sh 32
 ninja -Cbuild32
 sudo ninja -Cbuild32 install
@@ -122,8 +122,8 @@ sudo ldconfig
 cd ..
 
 # Mesa
-# If LLVM is enabled, edit llvm_config_x86_64-linux-gnu.cfg to point to your installed llvm-config if needed.
-# Editing conf_mesa.sh may be needed depending on how you want to build it.
+# If LLVM is enabled, edit llvm_config_x86_64-linux-gnu.cfg to point to the preferred installed llvm-config if needed.
+# Most people edit conf_mesa.sh to adjust Mesa build options.
 cd mesa
 ../marek-build/conf_mesa.sh
 ../marek-build/conf_mesa.sh 32
@@ -135,7 +135,7 @@ sudo ldconfig
 cd ..
 ```
 
-The above instructions overwrite distribution libraries and header files. If your Linux distribution updates them, they may have to be reinstalled from source.
+The above instructions overwrite distribution libraries and header files. If the Linux distribution updates them, they may have to be reinstalled from source.
 
 
 Building test suites
@@ -174,13 +174,13 @@ PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
 Mesa development and testing without subsequent installation
 ------------------------------------------------------------
 
-After you run `ninja install` for Mesa, you don't have to install it every time you rebuild it if you add symlinks from `/usr/lib` into your build directory. Then just build Mesa and the next started app will use it. There is a script that creates the symlinks:
+After running `ninja install` for Mesa, it's not needed to install it every time it's rebuilt if you add symlinks from `/usr/lib` into the build directory. Then just build Mesa and the next started app will use it. There is a script that creates the symlinks:
 
 ```bash
 marek-build/make-mesa-symlinks.sh
 ```
 
-If your Linux distribution updates packages and overwrites your symlinks, just re-run the script.
+If the Linux distribution updates packages and overwrites the symlinks, just re-run the script.
 
 
 Test suites and regression testing
@@ -196,7 +196,7 @@ Initial setup:
 
 Then just type `radeonsi-run-tests.py` to run all test suites. It will store the results in the `test-results` directory next to the cloned repositories and print regression information into the terminal.
 
-If your machine has multiple GPUs, you can select the one to test with `--gpu N`.
+If the machine has multiple GPUs, you may select the one to test using `--gpu N`.
 
 Expected tests results for some GPU types are stored directly in Mesa, so running `radeonsi-run-tests.py` will compare the results again this baseline. If the tests results are identical, the output will look like this:
 ```
@@ -278,4 +278,4 @@ Lastly, there are several `--no-xxx` option to disable running specific tests su
 What to do if piglit hangs the GPU
 ----------------------------------
 
-When it hangs, run `ps aux|grep home` over ssh to get command lines of currently running tests.  After reboot, you can run each line separately to find the hanging test.
+When it hangs, run `ps aux|grep home` over ssh to get command lines of currently running tests.  After reboot, run each line separately to find the hanging test.
