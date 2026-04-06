@@ -55,7 +55,7 @@ git clone https://github.com/marekolsak/marek-build.git
 
 # For the driver:
 git clone https://gitlab.freedesktop.org/agd5f/linux.git -b amd-staging-drm-next # AMD staff should use the internal repository instead
-git clone https://gitlab.freedesktop.org/mesa/drm.git # libdrm, only if needed
+git clone https://gitlab.freedesktop.org/mesa/libdrm.git
 git clone https://github.com/llvm/llvm-project.git # only if needed
 git clone https://gitlab.freedesktop.org/mesa/mesa.git
 git clone https://gitlab.freedesktop.org/mesa/demos.git # just for 32-bit glxinfo and glxgears
