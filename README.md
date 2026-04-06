@@ -141,7 +141,7 @@ sudo ldconfig
 cd ..
 ```
 
-The above instructions overwrite distribution libraries and header files. If the Linux distribution updates them, they may have to be reinstalled from source.
+If Mesa and libdrm are installed according to the above instructions, distribution libraries and header files will be overwritten. If the Linux distribution updates them, re-running `ninja install` may be needed.
 
 
 Building test suites
