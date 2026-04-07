@@ -180,7 +180,7 @@ PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
 Using Mesa without installing it
 --------------------------------
 
-An alternative to installing Mesa is to replace Mesa binaries in `/usr/lib` with symlinks pointing to the binaries in the Mesa build directory. Then every time Mesa is built, apps can use it immediately without having to install it first.
+An alternative to installing Mesa is to replace Mesa binaries in `/usr/lib` with symlinks pointing to the binaries in the Mesa build directory. Then every time Mesa is built, apps will use it immediately without having to install it first.
 
 A script is provided that creates the symlinks:
 
