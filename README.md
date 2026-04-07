@@ -180,7 +180,9 @@ PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
 Using Mesa without installing it
 --------------------------------
 
-After running `ninja install` for Mesa, it's not needed to install it every time it's rebuilt if you add symlinks from `/usr/lib` into the build directory. Then just build Mesa and the next started app will use it. There is a script that creates the symlinks:
+An alternative to installing Mesa is to replace Mesa binaries in `/usr/lib` with symlinks pointing to the binaries in the Mesa build directory. Then every time Mesa is built, apps can use it immediately without installing it.
+
+A script is provided that creates the symlinks:
 
 ```bash
 marek-build/make-mesa-symlinks.sh
