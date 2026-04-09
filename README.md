@@ -194,12 +194,14 @@ If the Linux distribution updates packages and overwrites the symlinks, just re-
 Test suites and regression testing
 ----------------------------------
 
+`radeonsi-run-tests.py` expects the cts directory to be called glcts. Make a symlink glcts -> cts.
+
 Initial setup:
 - mesa, piglit, and cts directories must be next to each other.
 - Add `PATH=$HOME/?/mesa/src/gallium/drivers/radeonsi/ci:$PATH` into `.bashrc`. Replace `?` with the proper path.
-- Install Rust, which will include its package manager Cargo: https://www.rust-lang.org/tools/install
+- Only Ubuntu 24.04: Install Rust, which will include its package manager Cargo: https://www.rust-lang.org/tools/install
   - The installer will add the Cargo environment into `.bashrc`, which will add cargo into `PATH`.
-- Restart bash to get the new `PATH`.
+  - Restart bash to get the new `PATH`.
 - Run: `cargo install deqp-runner`
 
 Then just type `radeonsi-run-tests.py` to run all test suites. It will store the results in the `test-results` directory next to the cloned repositories and print regression information into the terminal.
