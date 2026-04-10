@@ -166,17 +166,6 @@ cd ..
 Do not install the test suites. They should be run from their build directories.
 
 
-First test
-----------
-
-Verify that the driver works without Xorg. If this works, Xorg will work too.
-
-```bash
-PIGLIT_PLATFORM=gbm piglit/bin/glinfo
-PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
-```
-
-
 Using Mesa without installing it
 --------------------------------
 
@@ -203,6 +192,17 @@ sudo marek-build/make-mesa-symlinks.sh
 The build artifacts are now visible to all users, including the GDM greeter.
 
 If the Linux distribution updates packages and overwrites the symlinks, just re-run `make-mesa-symlinks.sh`.
+
+
+First test
+----------
+
+Verify that the driver works without Xorg. If this works, Xorg will work too.
+
+```bash
+PIGLIT_PLATFORM=gbm piglit/bin/glinfo
+PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
+```
 
 
 Test suites and regression testing
