@@ -39,7 +39,12 @@ else
     #gallium_drivers=all; vulkandrv=all; draw_use_llvm=true; others="-Dbuild-tests=true"
 fi
 
-rm -r build$1
+# Remove all files in the build directory, but not the build directory itself.
+# This is needed if the build directory is a symlink to preserve the symlink.
+#    dotglob = make * also match hidden names
+(shopt -s dotglob; rm -r build$1/*)
+
+# Exit immediately if a command exits with a non-zero status.
 set -e
 
 meson setup build$1 --prefix $prefix --libdir $prefix/lib/$arch --buildtype $buildtype $llvmconfig \

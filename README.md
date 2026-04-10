@@ -182,13 +182,27 @@ Using Mesa without installing it
 
 An alternative to installing Mesa is to replace Mesa binaries in `/usr/lib` with symlinks pointing to the binaries in the Mesa build directory. Then every time Mesa is built, apps will use it immediately without having to install it first.
 
-A script is provided that creates the symlinks:
+The symlinks will work for all apps except GDM (i.e. the graphical UI won't start) because GDM doesn't run as root and the user home directory typically doesn't have o+x, so GDM won't be able to see Mesa.
+
+The solution is to move the Mesa build directory elsewhere, like `/opt/mesa` owned by the user, and point `/usr/lib/...` symlinks to it as well as `$HOME/.../mesa/build`. For example:
 
 ```bash
-marek-build/make-mesa-symlinks.sh
+# In the Mesa directory
+sudo mkdir /opt/mesa       # make sure it has o+x
+sudo mkdir /opt/mesa32     # make sure it has o+x
+sudo chown user:user /opt/mesa
+sudo chown user:user /opt/mesa32
+ln -s /opt/mesa build      # build points to /opt/mesa
+ln -s /opt/mesa32 build32  # build32 points to /opt/mesa32
+
+# Then configure and build Mesa, and then run this, which creates the symlinks from /usr/lib/... to /opt/mesa...
+
+sudo marek-build/make-mesa-symlinks.sh
 ```
 
-If the Linux distribution updates packages and overwrites the symlinks, just re-run the script.
+The build artifacts are now visible to all users, including the GDM greeter.
+
+If the Linux distribution updates packages and overwrites the symlinks, just re-run `make-mesa-symlinks.sh`.
 
 
 Test suites and regression testing
