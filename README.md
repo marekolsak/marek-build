@@ -184,12 +184,12 @@ ln -s /opt/mesa build
 ln -s /opt/mesa32 build32
 ls -l build build32       # verify
 
-# Then configure and build Mesa, and then run this, which creates the symlinks from /usr/lib/... to /opt/mesa...
+# Then configure and build Mesa, and then run this, which creates the symlinks in /usr/lib/.
 
 sudo marek-build/make-mesa-symlinks.sh
 ```
 
-The build artifacts are now visible to all users, including the GDM greeter.
+The Mesa build artifacts are now visible to all users, including the GDM greeter.
 
 If the Linux distribution updates packages and overwrites the symlinks, just re-run `make-mesa-symlinks.sh`.
 
