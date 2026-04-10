@@ -182,18 +182,18 @@ Using Mesa without installing it
 
 An alternative to installing Mesa is to replace Mesa binaries in `/usr/lib` with symlinks pointing to the binaries in the Mesa build directory. Then every time Mesa is built, apps will use it immediately without having to install it first.
 
-The symlinks will work for all apps except GDM (i.e. the graphical UI won't start) because GDM doesn't run as root and the user home directory typically doesn't have o+x, so GDM won't be able to see Mesa.
+The symlinks pointing to home will work for all apps except GDM because GDM doesn't run as root and the user home directory typically doesn't have o+x, so GDM won't be able to see Mesa (i.e. the graphical UI won't start).
 
-The solution is to move the Mesa build directory elsewhere, like `/opt/mesa` owned by the user, and point `/usr/lib/...` symlinks to it as well as `$HOME/.../mesa/build`. For example:
+The solution is to move the Mesa build directory elsewhere, like `/opt/mesa` owned by the user, and point both `/usr/lib/...files` and `$HOME/.../mesa/build` to it where `$HOME/.../mesa/build` is also a symlink. Then just build Mesa and GDM will see it. Setup commands:
 
 ```bash
-# In the Mesa directory
-sudo mkdir /opt/mesa       # make sure it has o+x
-sudo mkdir /opt/mesa32     # make sure it has o+x
-sudo chown user:user /opt/mesa
-sudo chown user:user /opt/mesa32
-ln -s /opt/mesa build      # build points to /opt/mesa
-ln -s /opt/mesa32 build32  # build32 points to /opt/mesa32
+sudo mkdir /opt/mesa /opt/mesa32
+sudo chmod 755 /opt/mesa /opt/mesa32
+sudo chown user:user /opt/mesa /opt/mesa32
+# Enter the Mesa directory, make sure build and build32 are not present, and then:
+ln -s /opt/mesa build
+ln -s /opt/mesa32 build32
+ls -l build build32       # verify
 
 # Then configure and build Mesa, and then run this, which creates the symlinks from /usr/lib/... to /opt/mesa...
 
