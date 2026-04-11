@@ -173,7 +173,11 @@ An alternative to installing Mesa is to replace Mesa binaries in `/usr/lib` with
 
 The symlinks pointing to home will work for all apps except GDM because GDM doesn't run as root and the user home directory typically doesn't have o+x, so GDM won't be able to see Mesa (i.e. the graphical UI won't start).
 
-The solution is to move the Mesa build directory elsewhere, like `/opt/mesa` owned by the user, and point both `/usr/lib/...files` and `$HOME/.../mesa/build` to it where `$HOME/.../mesa/build` is also a symlink. Then just build Mesa and GDM will see it. Setup commands:
+The solution is to move the Mesa build directory elsewhere, like `/opt/mesa` owned by the user, and point both `/usr/lib/...files` and `$HOME/.../mesa/build` to it where `$HOME/.../mesa/build` is also a symlink. Then just build Mesa and GDM will see it.
+
+The other issue that may come up is that apps confined by AppArmor won't be able to access `/opt/mesa`. The workaround is to add `/opt/mesa/** r,` to the AppArmor profiles for such apps.
+
+Setup commands:
 
 ```bash
 sudo mkdir /opt/mesa /opt/mesa32
