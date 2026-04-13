@@ -24,6 +24,8 @@ create_links()
 
     ln -sf $build/src/egl/libEGL_mesa.so             $libdir/libEGL_mesa.so.0.0.0
     ln -sf $build/src/glx/libGLX_mesa.so             $libdir/libGLX_mesa.so.0.0.0
+    ln -sf $build/src/gbm/libgbm.so                  $libdir/libgbm.so
+    ln -sf $build/src/gbm/libgbm.so                  $libdir/libgbm.so.1
     ln -sf $build/src/gbm/libgbm.so                  $libdir/libgbm.so.1.0.0
     ln -sf $build/src/gbm/backends/dri/dri_gbm.so    $libdir/gbm/dri_gbm.so
     ln -sf $build/src/mapi/shared-glapi/libglapi.so  $libdir/libglapi.so.0.0.0
