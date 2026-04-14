@@ -34,7 +34,9 @@ Cloning repos
 -------------
 
 Notes:
-- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. It's recommended to only download the latest tagged archive, not the whole repository. Getting newer firmware is not necessary if the distribution already contains firmware for the GPU. Installed firmware can be found in `/lib/firmware/amdgpu`. The firmware is installed by copying files from the firmware repository into that directory and running `sudo update-initramfs -k all -u` to update initrd. The kernel only loads firmware from initrd.
+- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. Updating the firmware is recommended if the distribution firmware is out of date. To install the firmware, create the `/lib/firmware/updates/amdgpu` directory and copy files from the `amdgpu` directory in git into it. Running `sudo update-initramfs -k all -u` after that is recommended. The kernel first tries to load firmware from `/lib/firmware/updates`, and then from `/lib/firmware/`, so the former directory overrides the latter and is used for exactly this purpose.
+  - optionally add `firmware_class.dyndbg=+p ignore_loglevel` to the kernel command line to print file paths of loaded firmware into dmesg
+  - optionally print `/sys/kernel/debug/dri/0/amdgpu_firmware_info` to get versions of currently loaded firmware (`0` is the GPU number)
 - libdrm can be skipped if Mesa doesn't fail to configure, but that's rare.
 - The 32-bit driver is not needed if Steam is not going to be used because only Steam and some Steam games need 32-bit drivers.
 - xf86-video-amdgpu is not needed. The modesetting DDX is recommended instead, which is part of the X server and is required by zink (in case that's needed).
