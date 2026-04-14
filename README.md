@@ -34,7 +34,7 @@ Cloning repos
 -------------
 
 Notes:
-- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. Updating the firmware is recommended if the distribution firmware is out of date. To install the firmware, create the `/lib/firmware/updates/amdgpu` directory and copy files from the `amdgpu` directory in git into it. Running `sudo update-initramfs -k all -u` after that is recommended. The kernel first tries to load firmware from `/lib/firmware/updates`, and then from `/lib/firmware/`, so the former directory overrides the latter and is used for exactly this purpose.
+- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. Updating the firmware is recommended if the distribution firmware is out of date. To install the firmware, create the `/lib/firmware/updates/amdgpu` directory and copy files from the `amdgpu` directory in git into it. Running `sudo update-initramfs -k all -u` after that is recommended. The kernel first tries to load firmware from `/lib/firmware/updates/`, which can be used for user-installed firmware, and then from `/lib/firmware/`, which is typically distro-installed firmware.
   - optionally add `firmware_class.dyndbg=+p ignore_loglevel` to the kernel command line to print file paths of loaded firmware into dmesg
   - versions of currently loaded firmware can be obtained by printing `/sys/kernel/debug/dri/0/amdgpu_firmware_info` (`0` is the GPU number)
 - libdrm can be skipped if Mesa doesn't fail to configure, but that's rare.
