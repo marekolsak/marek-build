@@ -30,26 +30,36 @@ sudo pip install meson --break-system-packages
 
 Important: Secure Boot may prevent manually built kernels from booting unless they are signed by a trusted key. You can either disable Secure Boot in BIOS/UEFI, or enroll your own MOK and sign those kernels.
 
-Cloning repos
--------------
+Updating amdgpu firmware
+------------------------
+
+The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository in the amdgpu subdirectory. Updating the firmware is recommended if the distribution firmware is out of date.
+
+To install the firmware, create the `/lib/firmware/updates/amdgpu` directory and copy files from the `amdgpu` directory from git into it. Running `sudo update-initramfs -k all -u` after that is recommended, though might not be needed. The kernel first tries to load firmware from `/lib/firmware/updates/`, which can be used for user-installed firmware, and then from `/lib/firmware/`, which is typically distro-installed firmware.
 
 Notes:
-- linux-firmware: The latest firmware is in the [linux-firmware](https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/) repository. Updating the firmware is recommended if the distribution firmware is out of date. To install the firmware, create the `/lib/firmware/updates/amdgpu` directory and copy files from the `amdgpu` directory in git into it. Running `sudo update-initramfs -k all -u` after that is recommended. The kernel first tries to load firmware from `/lib/firmware/updates/`, which can be used for user-installed firmware, and then from `/lib/firmware/`, which is typically distro-installed firmware.
-  - optionally add `firmware_class.dyndbg=+p ignore_loglevel` to the kernel command line to print file paths of loaded firmware into dmesg
-  - versions of currently loaded firmware can be obtained by printing `/sys/kernel/debug/dri/0/amdgpu_firmware_info` (`0` is the GPU number)
+- Optionally add `firmware_class.dyndbg=+p ignore_loglevel` to the kernel command line to print file paths of loaded firmware into dmesg.
+- Versions of currently loaded firmware can be obtained by printing `/sys/kernel/debug/dri/0/amdgpu_firmware_info` (`0` is the GPU number)
+
+Cloning driver repos for build
+------------------------------
+
+Notes:
 - libdrm can be skipped if Mesa doesn't fail to configure, but that's rare.
-- The 32-bit driver is not needed if Steam is not going to be used because only Steam and some Steam games (and GOG games) need 32-bit drivers.
-- The DDX such as xf86-video-amdgpu is not used with XWayland, so we can ignore it. If you do want to run traditional X, the modesetting DDX is recommended.
+- The 32-bit driver is not needed if Steam or 32-bit apps are not going to be used.
+- The DDX such as xf86-video-amdgpu is not used with XWayland, so we can ignore it. If you use traditional X, the modesetting DDX is recommended, otherwise ignore.
 - LLVM isn't needed if the goal is to use only ACO (which is the AMD GPU shader compiler in Mesa) or alternatively LLVM can be obtained from the distribution. If LLVM is built from source, using the latest release branch of LLVM is recommended.
 - mesa/demos is only needed for building 32-bit glxinfo and glxgears to verify whether 32-bit Mesa is installed correctly and functional. 64-bit glxinfo and glxgears is provided by the distribution.
 - If the distro kernel is recent enough, it may be sufficient.
+- umr is a debugging and monitoring tool for AMD GPUs.
 
-These are usually recommended to build from source:
+These are recommended to build from source:
 - linux
 - libdrm
 - mesa
 - piglit
 - VK-GL-CTS
+- umr
 
 ssh addresses can be used instead if needed.
 
@@ -72,11 +82,12 @@ git clone https://gitlab.freedesktop.org/mesa/mesa.git
 git clone https://gitlab.freedesktop.org/mesa/demos.git # just for 32-bit glxinfo and glxgears
 git clone https://gitlab.freedesktop.org/mesa/piglit.git
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git cts
+git clone https://gitlab.freedesktop.org/tomstdenis/umr.git
 ```
 
 **Build order for the driver:**
 - linux-firmware (just copy the firmware files to /lib/firmware/amdgpu/ if needed)
-- linux (the kernel, it uses firmware)
+- linux
 - libdrm
 - llvm (if needed)
 - mesa (depends on libdrm and optionally llvm)
@@ -148,8 +159,8 @@ cd ..
 If Mesa and libdrm are installed according to the above instructions, distribution libraries and header files will be overwritten. If the Linux distribution updates them, re-running `ninja install` may be needed.
 
 
-Building test suites
---------------------
+Building test suites and tools
+------------------------------
 
 These can be built independently of drivers.
 
@@ -168,6 +179,8 @@ cd ..
 ```
 
 Do not install the test suites. They should be run from their build directories.
+
+Also build umr if needed.
 
 
 Using Mesa without installing it
@@ -205,12 +218,27 @@ If the Linux distribution updates packages and overwrites the symlinks, just re-
 First test
 ----------
 
-Verify that the driver works without Xorg. If this works, Xorg will work too.
+Verify that the driver works without any graphical user interface. If this works, any GUI will work too.
 
 ```bash
 PIGLIT_PLATFORM=gbm piglit/bin/glinfo
 PIGLIT_PLATFORM=gbm piglit/bin/fbo-generatemipmap -auto
 ```
+
+Diagnosing GPU hangs
+--------------------
+
+umr is required for this.
+
+Copy `bin/gstat` into `/usr/local/bin/`. Then run `sudo visudo` and add this to allow running `gstat` via sudo without a password for convenience:
+
+`your_username ALL=(root) NOPASSWD: /usr/local/bin/gstat`
+
+When the GPU hangs, log in via ssh and type `gstat`. It will print information that may be used to debug the GPU hang.
+
+You can extend `gstat` to print more information, but note that it runs as root without any password, so be careful what you put into it.
+
+If piglit or CTS hangs, you can run `ps aux|grep home` to get command lines of currently running tests. After reboot, run each line separately to find the hanging test.
 
 
 Test suites and regression testing
@@ -307,7 +335,3 @@ As `radeonsi-run-tests.py` uses multiple processes / threads, the `-j` option ca
 Lastly, there are several `--no-xxx` option to disable running specific tests suites (eg: `--no-deqp-egl`). Use `-h` to see all options.
 
 
-What to do if piglit hangs the GPU
-----------------------------------
-
-When it hangs, run `ps aux|grep home` over ssh to get command lines of currently running tests.  After reboot, run each line separately to find the hanging test.

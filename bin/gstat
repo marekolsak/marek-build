@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# sudoers should contain: your_username ALL=(root) NOPASSWD: /usr/local/bin/gstat
+# Edit /etc/sudoers with visudo.
+
+# Execute self with sudo if sudo is missing
+if (( EUID != 0 )); then
+    exec sudo -- "$0" "$@"
+fi
+
+for ((i = 0; i < 4; i++)); do
+    if [ -e "/sys/kernel/debug/dri/$i" ]; then
+        umr -O bits -i $i -r '*.*..*GRBM_STATUS$'
+    fi
+done
+
+dmesg | grep -Ei 'amdgpu|drm|gpu|ring|reset|firmware|timeout|vram|gtt|dc|display' | tail -n10
