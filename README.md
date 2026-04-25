@@ -3,6 +3,9 @@ Marek's approach to building AMD GPU drivers for driver development
 
 These instructions have been verified on Ubuntu 26.04. Older versions of Ubuntu may need small adjustments.
 
+Installing dependencies
+-----------------------
+
 The following packages are needed:
 
 ```bash
