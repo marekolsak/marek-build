@@ -47,7 +47,7 @@ Cloning driver repos for build
 Notes:
 - libdrm can be skipped if Mesa doesn't fail to configure, but that's rare.
 - The 32-bit driver is not needed if Steam or 32-bit apps are not going to be used.
-- The DDX such as xf86-video-amdgpu is not used with XWayland, so we can ignore it. If you use traditional X, the modesetting DDX is recommended, otherwise ignore.
+- The DDX such as xf86-video-amdgpu is not used with XWayland. If you use traditional X, the modesetting DDX is recommended, otherwise ignore.
 - LLVM isn't needed if the goal is to use only ACO (which is the AMD GPU shader compiler in Mesa) or alternatively LLVM can be obtained from the distribution. If LLVM is built from source, using the latest release branch of LLVM is recommended.
 - mesa/demos is only needed for building 32-bit glxinfo and glxgears to verify whether 32-bit Mesa is installed correctly and functional. 64-bit glxinfo and glxgears is provided by the distribution.
 - If the distro kernel is recent enough, it may be sufficient.
