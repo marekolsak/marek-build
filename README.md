@@ -237,7 +237,7 @@ Copy `bin/gstat` into `/usr/local/bin/`. Then run `sudo visudo` and add this to 
 
 `your_username ALL=(root) NOPASSWD: /usr/local/bin/gstat`
 
-When the GPU hangs, log in via ssh and type `gstat`. It will print information that may be used to debug the GPU hang.
+When the GPU hangs, log in via ssh and type `gstat` (without `sudo`). It will print information that may be used to debug the GPU hang.
 
 You can extend `gstat` to print more information, but note that it runs as root without any password, so be careful what you put into it.
 
