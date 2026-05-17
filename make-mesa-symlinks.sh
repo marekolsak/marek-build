@@ -51,7 +51,7 @@ prefix=`realpath $prefix`
 create_links /opt/mesa   /usr/lib/x86_64-linux-gnu true
 create_links /opt/mesa32 /usr/lib/i386-linux-gnu   false
 
-ln -sf $prefix/${dir}/src/util/00-mesa-defaults.conf /usr/share/drirc.d/00-mesa-defaults.conf
-ln -sf $prefix/${dir}/src/util/00-radv-defaults.conf /usr/share/drirc.d/00-radv-defaults.conf
+ln -sf $prefix/mesa/src/util/00-mesa-defaults.conf /usr/share/drirc.d/00-mesa-defaults.conf
+ln -sf $prefix/mesa/src/util/00-radv-defaults.conf /usr/share/drirc.d/00-radv-defaults.conf
 
 ldconfig
