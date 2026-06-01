@@ -20,7 +20,7 @@ else
     arch=x86_64-linux-gnu
     draw_use_llvm=true
     llvmconfig="--native-file `dirname $0`/llvm_config_$arch.cfg"
-    mm="-Dgallium-va=enabled -Dvideo-codecs=av1dec,av1enc,vp9dec,vc1dec,h264dec,h264enc,h265dec,h265enc"
+    mm="-Dgallium-va=enabled -Dvideo-codecs=av1dec,av1enc,vp9dec,vc1dec,h264dec,h264enc,h265dec,h265enc,jpegdec"
 
     # comment or uncomment the following settings
 
